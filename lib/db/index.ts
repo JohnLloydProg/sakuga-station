@@ -1,10 +1,10 @@
-import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
+import {usersRelations} from "./schema/relations";
+import { config } from "dotenv";
 
+config({path: ".env"});
 
-if (process.env.DATABASE_URL) {
-    const sql = neon(process.env.DATABASE_URL);
-    const db = drizzle({client:sql });
-}else {
-    console.log("NO DATABASE URL DETECTED! closing...")
-}
+export const db = drizzle({
+    connection: process.env.DATABASE_URL!,
+    relations: usersRelations
+});
