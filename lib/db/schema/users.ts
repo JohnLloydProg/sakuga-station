@@ -1,4 +1,4 @@
-import { pgTable, text, uuid, timestamp, varchar, boolean, index } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid, timestamp, varchar, boolean, uniqueIndex } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -12,9 +12,9 @@ export const users = pgTable("users", {
 
 export const sessions = pgTable("sessions", {
     id: uuid("id").primaryKey().defaultRandom(),
-    userId: uuid("user_id").references(() => users.id, {onDelete: "cascade"}).notNull(),
+    userId: uuid("user_id").references(() => users.id, {onDelete: "cascade"}).notNull().unique(),
     createdAt: timestamp("created_at").defaultNow().notNull()
-}, (t) => [index("sessions_user_id_idx").on(t.userId)]);
+}, (t) => [uniqueIndex("sessions_user_id_idx").on(t.userId)]);
 
 export type User = typeof users.$inferSelect;
 export type Session = typeof sessions.$inferSelect;

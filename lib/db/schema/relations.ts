@@ -10,7 +10,8 @@ export const usersRelations = defineRelations({users, posts, comments, sessions,
     posts: {
         author: r.one.users({
             from: r.posts.authorId,
-            to: r.users.id
+            to: r.users.id,
+            optional: false
         }),
         comments: r.many.comments(),
         contents: r.many.postContents(),
@@ -26,7 +27,8 @@ export const usersRelations = defineRelations({users, posts, comments, sessions,
     sessions: {
         users: r.one.users({
             from: r.sessions.userId,
-            to: r.users.id
+            to: r.users.id,
+            optional: false
         })
     },
     comments: {
@@ -38,11 +40,13 @@ export const usersRelations = defineRelations({users, posts, comments, sessions,
     postContents: {
         type: r.one.contents({
             from: r.postContents.contentId,
-            to: r.contents.id
+            to: r.contents.id,
+            optional: false
         }),
         post: r.one.posts({
             from: r.postContents.postId,
-            to: r.posts.id
+            to: r.posts.id,
+            optional: false,
         })
     },
     contents: {
