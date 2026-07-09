@@ -1,4 +1,5 @@
 import { db } from "../db";
+import { Post } from "../db/schema/posts";
 
 export async function getClientPosts():Promise<ClientPost[]> {
     try {
@@ -40,6 +41,37 @@ export async function getClientPosts():Promise<ClientPost[]> {
     }catch(error) {
         console.log("Error fetching posts:", error);
         return []
+    }
+}
+
+export async function getPostsByAuthorId(authorId:string): Promise<Post[]> {
+    try{
+        const postsList = await db.query.posts.findMany({
+            where: {
+                authorId: authorId
+            }
+        })
+
+        console.log(`Returned ${postsList.length} posts`);
+
+        return postsList;
+    }catch(error) {
+        console.log("Erro fetching posts:", error);
+        return []
+    }
+}
+
+
+export async function getPostbyID(postID:string):Promise<Post|null> {
+    try {
+        const post = await db.query.posts.findFirst({where:{id:postID}});
+        if (!post) return null;
+
+        console.log("Got post with ID:", post.id);
+        
+        return post;
+    }catch(error) {
+        return null;
     }
 }
 
