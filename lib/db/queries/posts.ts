@@ -61,9 +61,19 @@ export async function getPostsByAuthorId(authorId: string): Promise<Post[]> {
 	}
 }
 
-export async function getPostbyID(postId: string): Promise<Post | null> {
+export async function getPostbyID(postId: string) {
 	try {
-		const post = await db.query.posts.findFirst({ where: { id: postId } });
+		const post = await db.query.posts.findFirst({
+			where: { id: postId },
+			with: {
+				contents: {
+					with: {
+						type: true,
+					},
+				},
+				categories: true,
+			},
+		});
 		if (!post) return null;
 
 		console.log("Got post with ID:", post.id);
