@@ -1,11 +1,18 @@
 "use client";
 
-import { deletePost } from "@/lib/db/mutations/posts";
+import { createPost, deletePost } from "@/lib/db/mutations/posts";
 import { Post } from "@/lib/db/schema/posts";
-import Link from "next/link";
+import { User } from "@/lib/db/schema/users";
+import { redirect } from "next/navigation";
 import { useState } from "react";
 
-export default function PostTable({ posts }: { posts: Post[] }) {
+export default function PostTable({
+	posts,
+	user,
+}: {
+	posts: Post[];
+	user: User;
+}) {
 	const [selectedPost, selectPost] = useState<Post | null>(null);
 
 	return (
@@ -24,47 +31,48 @@ export default function PostTable({ posts }: { posts: Post[] }) {
 
 							await deletePost(selectedPost.id);
 						}}
+						disabled={selectedPost === null}
 					>
 						Delete
 					</button>
 					<button
 						type="button"
 						className="px-6 py-2 bg-accent text-foreground font-josefin font-bold rounded-md hover:opacity-90 transition"
+						onClick={async () => {
+							await createPost({
+								authorId: user.id,
+								title: "Untitled Post",
+								slug: crypto.randomUUID(),
+							});
+						}}
 					>
-						Edit
+						New
 					</button>
 					<button
 						type="button"
 						className="px-6 py-2 bg-accent text-foreground font-josefin font-bold rounded-md hover:opacity-90 transition"
-					>
-						New
-					</button>
-					<Link
-						href={`/admin/${selectedPost?.id}`}
-						type="button"
-						className="px-6 py-2 bg-accent text-foreground font-josefin font-bold rounded-md hover:opacity-90 transition"
+						onClick={() => {
+							if (!selectedPost) return;
+
+							redirect(`/admin/dashboard/${selectedPost?.id}`);
+						}}
+						disabled={selectedPost === null}
 					>
 						View
-					</Link>
+					</button>
 				</div>
 			</div>
 
 			<div className="min-w-200 w-full flex flex-col">
-				<div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] text-center items-center">
+				<div className="grid grid-cols-[2fr_1fr_1fr] text-center items-center">
 					<div className="bg-accent font-josefin font-bold py-4 text-left pl-6 rounded-tl-xl">
 						Post Title
 					</div>
 					<div className="bg-accent font-josefin font-bold py-4 border-l border-background">
 						Created On
 					</div>
-					<div className="bg-accent font-josefin font-bold py-4 border-l border-background">
-						Last Update
-					</div>
-					<div className="bg-accent font-josefin font-bold py-4 border-l border-background">
-						Published On
-					</div>
 					<div className="bg-accent font-josefin font-bold py-4 border-l border-background rounded-tr-xl">
-						Status
+						Last Update
 					</div>
 				</div>
 
@@ -77,7 +85,7 @@ export default function PostTable({ posts }: { posts: Post[] }) {
 							type="button"
 							key={post.id}
 							onClick={() => selectPost(post)}
-							className={`grid grid-cols-[2fr_1fr_1fr_1fr_1fr] text-center items-center ${rowBg} cursor-pointer hover:bg-secondary/80 transition-colors duration-150 group border-accent ${borderbottom} ${selectedPost === post ? "bg-secondary/80" : "bg-transparent"}`}
+							className={`grid grid-cols-[2fr_1fr_1fr] text-center items-center ${rowBg} cursor-pointer hover:bg-secondary/80 transition-colors duration-150 group border-accent ${borderbottom} ${selectedPost === post ? "bg-secondary/80" : "bg-transparent"}`}
 						>
 							<div
 								className={`py-5 text-left pl-6 font-medium border-accent border-l  overflow-x-clip group-hover:text-accent font-josefin transition-colors ${selectedPost === post ? "text-accent" : "text-foreground"}`}
@@ -89,18 +97,8 @@ export default function PostTable({ posts }: { posts: Post[] }) {
 								{post.createdAt.toLocaleDateString()}
 							</div>
 
-							<div className={`py-5 border-l border-accent`}>
+							<div className={`py-5 border-l border-r border-accent`}>
 								{post.updatedAt.toLocaleDateString()}
-							</div>
-
-							<div className={`py-5 border-l border-accent`}>
-								{post.publishedAt?.toLocaleDateString() || "—"}
-							</div>
-
-							<div
-								className={`py-5 border-l border-accent border-r font-bold px-2`}
-							>
-								{post.status}
 							</div>
 						</button>
 					);

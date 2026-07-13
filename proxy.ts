@@ -13,8 +13,10 @@ export async function proxy(request: NextRequest) {
 		},
 	});
 	if (!session) return NextResponse.redirect(new URL("/admin/login"));
+	console.log(request.nextUrl);
+	if (request.nextUrl.pathname === "/admin") return NextResponse.redirect(new URL("/admin/dashboard", request.url));
 }
 
 export const config = {
-	matcher: "/admin/((?!login$).*)",
+	matcher: ["/admin/((?!login$).*)", "/admin"],
 };

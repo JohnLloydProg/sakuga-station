@@ -18,7 +18,7 @@ interface ClientPost {
 	body: string | null;
 	thumbnail: string | null;
 	categories: Category[];
-	publishedAt: Date;
+	updatedAt: Date;
 }
 
 interface ClientContent {
@@ -36,7 +36,7 @@ interface ClientCompletePost {
 	body: string | null;
 	thumbnail: string | null;
 	categories: Category[];
-	publishedAt: Date;
+	updatedAt: Date;
 	contents: ClientContent[];
 }
 

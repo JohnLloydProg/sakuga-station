@@ -6,7 +6,8 @@ export async function addCategory(categoryId: string, postId: string) {
 	try {
 		await db
 			.insert(postCategories)
-			.values({ categoryId: categoryId, postId: postId });
+			.values({ categoryId: categoryId, postId: postId })
+			.onConflictDoNothing();
 		console.log(`Added category ${categoryId} to post ${postId}`);
 	} catch (error) {
 		console.log("Error while adding category:", error);

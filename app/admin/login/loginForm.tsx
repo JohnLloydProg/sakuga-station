@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { loginAction } from "@/lib/actions/login";
+import { loginAction } from "@/lib/actions/auth";
 
 function SubmitButton() {
 	const { pending, data } = useFormStatus();

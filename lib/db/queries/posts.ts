@@ -3,7 +3,6 @@ import { Post } from "../schema/posts";
 
 export async function getClientPosts(): Promise<ClientPost[]> {
 	try {
-		const clientPostsList: ClientPost[] = [];
 		const postsList = await db.query.posts.findMany({
 			columns: {
 				id: true,
@@ -11,7 +10,7 @@ export async function getClientPosts(): Promise<ClientPost[]> {
 				slug: true,
 				body: true,
 				thumbnail: true,
-				publishedAt: true,
+				updatedAt: true,
 			},
 			with: {
 				author: {
@@ -24,20 +23,11 @@ export async function getClientPosts(): Promise<ClientPost[]> {
 				},
 				categories: true,
 			},
-			where: {
-				status: "Approved",
-			},
 		});
 
-		for (const post of postsList) {
-			if (!post.publishedAt) continue;
+		console.log(`Found ${postsList.length} posts.`);
 
-			clientPostsList.push({ ...post, publishedAt: post.publishedAt });
-		}
-
-		console.log(`Found ${clientPostsList.length} posts.`);
-
-		return clientPostsList;
+		return postsList;
 	} catch (error) {
 		console.log("Error fetching posts:", error);
 		return [];
@@ -50,6 +40,9 @@ export async function getPostsByAuthorId(authorId: string): Promise<Post[]> {
 			where: {
 				authorId: authorId,
 			},
+			orderBy: {
+				updatedAt: "desc"
+			}
 		});
 
 		console.log(`Returned ${postsList.length} posts`);
@@ -70,6 +63,9 @@ export async function getPostbyID(postId: string) {
 					with: {
 						type: true,
 					},
+					orderBy: {
+						index: "asc",
+					},
 				},
 				categories: true,
 			},
@@ -89,7 +85,6 @@ export async function getClientPostsByCategory(
 	category: string,
 ): Promise<ClientPost[]> {
 	try {
-		const clientPostsList: ClientPost[] = [];
 		const postsList = await db.query.posts.findMany({
 			columns: {
 				id: true,
@@ -97,7 +92,7 @@ export async function getClientPostsByCategory(
 				slug: true,
 				body: true,
 				thumbnail: true,
-				publishedAt: true,
+				updatedAt: true,
 			},
 			with: {
 				author: {
@@ -111,22 +106,15 @@ export async function getClientPostsByCategory(
 				categories: true,
 			},
 			where: {
-				status: "Approved",
 				categories: {
 					name: category,
 				},
 			},
 		});
 
-		for (const post of postsList) {
-			if (!post.publishedAt) continue;
+		console.log(`Found ${postsList.length} with category ${category}`);
 
-			clientPostsList.push({ ...post, publishedAt: post.publishedAt });
-		}
-
-		console.log(`Found ${clientPostsList.length} with category ${category}`);
-
-		return clientPostsList;
+		return postsList;
 	} catch (error) {
 		console.log("Error fetching posts:", error);
 		return [];
@@ -144,7 +132,7 @@ export async function getClientPostBySlug(
 				slug: true,
 				body: true,
 				thumbnail: true,
-				publishedAt: true,
+				updatedAt: true,
 			},
 			with: {
 				author: {
@@ -169,7 +157,7 @@ export async function getClientPostBySlug(
 				slug: slug,
 			},
 		});
-		if (!post || !post.publishedAt) return null;
+		if (!post) return null;
 
 		console.log(`Found post with slug "${slug}"`);
 		const contents: ClientContent[] = post.contents.map((content) => {
@@ -181,7 +169,7 @@ export async function getClientPostBySlug(
 			};
 		});
 
-		return { ...post, publishedAt: post.publishedAt, contents: contents };
+		return { ...post, contents: contents };
 	} catch (error) {
 		console.log(`Error fetchig post with slug "${slug}":`, error);
 		return null;

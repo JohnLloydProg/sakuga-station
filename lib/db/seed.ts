@@ -1,18 +1,28 @@
 import { db } from "./index";
+import { createUser } from "./mutations/users";
 import { categories } from "./schema/categories";
 import { contents } from "./schema/contents";
-
 
 const contentNames = ["Header", "Picture", "Paragraph"];
 const categoryNames = ["Romance", "Isekai", "Shounen"];
 async function contentTypes() {
-    for (const name of contentNames) {
-        await db.insert(contents).values({name:name});
-    }
+	for (const name of contentNames) {
+		await db.insert(contents).values({ name: name });
+	}
 
-    for (const category of categoryNames) {
-        await db.insert(categories).values({name:category});
-    }
+	for (const category of categoryNames) {
+		await db.insert(categories).values({ name: category });
+	}
 }
 
-contentTypes();
+async function createAdminAccount() {
+	if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD) return;
+	await createUser({
+		email: process.env.ADMIN_EMAIL,
+		firstName: "Admin",
+		lastName: "Admin",
+		password: process.env.ADMIN_PASSWORD,
+	});
+}
+
+createAdminAccount();

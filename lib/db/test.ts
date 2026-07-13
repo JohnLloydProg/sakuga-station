@@ -38,8 +38,6 @@ async function createPostTest() {
 async function publishPost() {
 	const post = await getPostbyID("e1b2a01e-7caf-4e30-8bab-160ce377715b");
 	if (!post) return;
-	post.status = "Approved";
-	post.publishedAt = new Date();
 	await addCategory("c08089f6-2f8d-4b2b-bd2f-7424b08d4280", post.id);
 	await updatePost(post);
 }

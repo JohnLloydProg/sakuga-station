@@ -16,7 +16,7 @@ export default async function DashboardPage() {
 
 	return (
 		<div className="w-full min-h-screen bg-background p-8 font-lato text-foreground">
-			<PostTable posts={posts}/>
+			<PostTable posts={posts} user={user} />
 		</div>
 	);
 }

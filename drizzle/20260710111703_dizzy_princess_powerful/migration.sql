@@ -1,0 +1,1 @@
+ALTER TABLE "post_categories" ADD PRIMARY KEY ("post_id","category_id");

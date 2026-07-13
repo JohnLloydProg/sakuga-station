@@ -3,6 +3,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "..";
 import { Post, posts } from "../schema/posts";
+import { revalidatePath } from "next/cache";
 
 export async function createPost(
 	postProp: typeof posts.$inferInsert,
@@ -10,7 +11,8 @@ export async function createPost(
 	try {
 		const post = (await db.insert(posts).values(postProp).returning()).at(0);
 		if (!post) return null;
-
+		
+		revalidatePath(`/admin/dashboard`);
 		console.log("Created post with ID:", post.id);
 
 		return post ?? null;
@@ -43,6 +45,7 @@ export async function updatePost(postProp: Post): Promise<Post> {
 export async function deletePost(postId: string): Promise<void> {
 	try {
 		await db.delete(posts).where(eq(posts.id, postId));
+		revalidatePath("/admin/dashboard");
 		console.log("Deleted post with ID:", postId);
 	} catch (error) {
 		console.log("Error deleting post:", error);

@@ -21,7 +21,14 @@ export async function createUser(
 export async function createSession(user: User): Promise<string | null> {
 	try {
 		const session = (
-			await db.insert(sessions).values({ userId: user.id }).returning()
+			await db
+				.insert(sessions)
+				.values({ userId: user.id })
+				.onConflictDoUpdate({
+					target: sessions.userId,
+					set: { id: crypto.randomUUID() },
+				})
+				.returning()
 		).at(0);
 		if (!session) return null;
 
@@ -31,27 +38,6 @@ export async function createSession(user: User): Promise<string | null> {
 
 		return session.id;
 	} catch (insertError) {
-		if (insertError instanceof DrizzleQueryError) {
-			if (
-				insertError.cause &&
-				"code" in insertError.cause &&
-				insertError.cause.code === "23505"
-			) {
-				try {
-					const newUUID = crypto.randomUUID();
-					await db
-						.update(sessions)
-						.set({ id: newUUID })
-						.where(eq(sessions.userId, user.id));
-					console.log(
-						`Replaced session with ID ${newUUID} for user with ID: ${user.id}`,
-					);
-					return newUUID;
-				} catch (updateError) {
-					console.log("Error updating session:", updateError);
-				}
-			}
-		}
 		console.log("Error creating session:", insertError);
 		return null;
 	}

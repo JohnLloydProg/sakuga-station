@@ -1,3 +1,6 @@
+"use client";
+
+import { logoutAction } from "@/lib/actions/auth";
 import Image from "next/image";
 
 export default function AdminHeader() {
@@ -13,6 +16,9 @@ export default function AdminHeader() {
 				<button
 					type="button"
 					className="bg-accent rounded-full text-lg font-josefin font-bold py-1 px-4"
+					onClick={async () => {
+						await logoutAction();
+					}}
 				>
 					Logout
 				</button>

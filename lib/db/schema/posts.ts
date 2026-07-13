@@ -18,11 +18,9 @@ export const posts = pgTable(
 		title: text("title").notNull(),
 		slug: text("slug").notNull().unique(),
 		body: text("body"),
-		status: varchar("status", { length: 50 }).default("draft").notNull(),
 		thumbnail: text("thumbnail_url"),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at").defaultNow().notNull(),
-		publishedAt: timestamp("published_at"),
 	},
 	(t) => [index("posts_author_id_idx").on(t.authorId)],
 );

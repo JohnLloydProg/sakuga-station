@@ -4,17 +4,12 @@ import { cookies } from "next/headers";
 import { createSession } from "../db/mutations/users";
 import { getUserByEmailPassword } from "../db/queries/users";
 import { redirect } from "next/navigation";
-
-interface LoginState {
-	success: boolean;
-	message?: string;
-	error?: string;
-}
+import type { FormState } from "./interfaces";
 
 export async function loginAction(
-	_: LoginState,
+	_: FormState,
 	formData: FormData,
-): Promise<LoginState> {
+): Promise<FormState> {
 	const email = formData.get("email") as string;
 	const password = formData.get("password") as string;
 
@@ -31,4 +26,11 @@ export async function loginAction(
 	cookieStore.set("sessionId", sessionId);
 
 	redirect("/admin/dashboard");
+}
+
+export async function logoutAction() {
+	const cookieStore = await cookies();
+	cookieStore.delete("sessionId");
+
+	redirect("/admin/login");
 }
