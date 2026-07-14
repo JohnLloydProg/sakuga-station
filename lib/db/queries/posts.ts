@@ -1,7 +1,13 @@
+import { and, count, eq, ilike } from "drizzle-orm";
 import { db } from "..";
-import { Post } from "../schema/posts";
+import { categories, postCategories } from "../schema/categories";
+import { type Post, posts } from "../schema/posts";
+import type { User } from "../schema/users";
 
-export async function getClientPosts(): Promise<ClientPost[]> {
+export async function getClientPosts(
+	offset: number,
+	search?: string,
+): Promise<[ClientPost[], number]> {
 	try {
 		const postsList = await db.query.posts.findMany({
 			columns: {
@@ -9,8 +15,9 @@ export async function getClientPosts(): Promise<ClientPost[]> {
 				title: true,
 				slug: true,
 				body: true,
+				reads: true,
 				thumbnail: true,
-				updatedAt: true,
+				publishedAt: true,
 			},
 			with: {
 				author: {
@@ -23,6 +30,165 @@ export async function getClientPosts(): Promise<ClientPost[]> {
 				},
 				categories: true,
 			},
+			where: {
+				isPublished: true,
+				title: {
+					ilike: `${search ? search : ""}%`,
+				},
+			},
+			orderBy: {
+				updatedAt: "desc",
+			},
+			limit: 6,
+			offset: offset * 6,
+		});
+
+		console.log(`Found ${postsList.length} posts.`);
+
+		return [
+			postsList,
+			await db.$count(
+				posts,
+				and(
+					ilike(posts.title, `${search ? search : ""}%`),
+					eq(posts.isPublished, true),
+				),
+			),
+		];
+	} catch (error) {
+		console.log("Error fetching posts:", error);
+		return [[], 0];
+	}
+}
+
+export async function getClientPostsByCategory(
+	category: string,
+	offset: number,
+	search?: string,
+): Promise<[ClientPost[], number]> {
+	try {
+		const postsList = await db.query.posts.findMany({
+			columns: {
+				id: true,
+				title: true,
+				slug: true,
+				body: true,
+				reads: true,
+				thumbnail: true,
+				publishedAt: true,
+			},
+			with: {
+				author: {
+					columns: {
+						id: true,
+						email: true,
+						firstName: true,
+						lastName: true,
+					},
+				},
+				categories: true,
+			},
+			where: {
+				isPublished: true,
+				categories: {
+					name: category,
+				},
+				title: {
+					ilike: `${search ? search : ""}%`,
+				},
+			},
+			orderBy: {
+				updatedAt: "desc",
+			},
+			limit: 6,
+			offset: offset * 6,
+		});
+
+		console.log(`Found ${postsList.length} with category ${category}`);
+
+		const [result] = await db
+			.select({
+				total: count(postCategories.postId),
+			})
+			.from(postCategories)
+			.innerJoin(categories, eq(postCategories.categoryId, categories.id))
+			.innerJoin(posts, eq(postCategories.postId, posts.id))
+			.where(and(eq(categories.name, category), eq(posts.isPublished, true)));
+
+		return [postsList, result?.total ?? 0];
+	} catch (error) {
+		console.log("Error fetching posts:", error);
+		return [[], 0];
+	}
+}
+
+export async function getClientPostBySlug(
+	slug: string,
+): Promise<ClientCompletePost | null> {
+	try {
+		const post = await db.query.posts.findFirst({
+			columns: {
+				id: true,
+				title: true,
+				slug: true,
+				body: true,
+				reads: true,
+				thumbnail: true,
+				publishedAt: true,
+			},
+			with: {
+				author: {
+					columns: {
+						id: true,
+						email: true,
+						firstName: true,
+						lastName: true,
+					},
+				},
+				contents: {
+					with: {
+						type: true,
+					},
+					orderBy: {
+						index: "asc",
+					},
+				},
+				categories: true,
+			},
+			where: {
+				isPublished: true,
+				slug: slug,
+			},
+		});
+		if (!post) return null;
+
+		console.log(`Found post with slug "${slug}"`);
+		const contents: ClientContent[] = post.contents.map((content) => {
+			return {
+				id: content.id,
+				type: content.type.name,
+				payload: content.payload,
+				index: content.index,
+			};
+		});
+
+		return { ...post, contents: contents };
+	} catch (error) {
+		console.log(`Error fetchig post with slug "${slug}":`, error);
+		return null;
+	}
+}
+
+export async function getMostReadPosts(): Promise<Post[]> {
+	try {
+		const postsList = await db.query.posts.findMany({
+			where: {
+				isPublished: true,
+			},
+			orderBy: {
+				reads: "desc",
+			},
+			limit: 3,
 		});
 
 		console.log(`Found ${postsList.length} posts.`);
@@ -34,16 +200,26 @@ export async function getClientPosts(): Promise<ClientPost[]> {
 	}
 }
 
-export async function getPostsByAuthorId(authorId: string): Promise<Post[]> {
+export async function getPostsByAuthorId(user: User): Promise<Post[]> {
 	try {
-		const postsList = await db.query.posts.findMany({
-			where: {
-				authorId: authorId,
-			},
-			orderBy: {
-				updatedAt: "desc"
-			}
-		});
+		let postsList: Post[] = [];
+
+		if (user.isAdmin) {
+			postsList = await db.query.posts.findMany({
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+		} else {
+			postsList = await db.query.posts.findMany({
+				where: {
+					authorId: user.id,
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+		}
 
 		console.log(`Returned ${postsList.length} posts`);
 
@@ -77,101 +253,6 @@ export async function getPostbyID(postId: string) {
 		return post;
 	} catch (error) {
 		console.log(`Error while getting post with ID %${postId}: ${error}`);
-		return null;
-	}
-}
-
-export async function getClientPostsByCategory(
-	category: string,
-): Promise<ClientPost[]> {
-	try {
-		const postsList = await db.query.posts.findMany({
-			columns: {
-				id: true,
-				title: true,
-				slug: true,
-				body: true,
-				thumbnail: true,
-				updatedAt: true,
-			},
-			with: {
-				author: {
-					columns: {
-						id: true,
-						email: true,
-						firstName: true,
-						lastName: true,
-					},
-				},
-				categories: true,
-			},
-			where: {
-				categories: {
-					name: category,
-				},
-			},
-		});
-
-		console.log(`Found ${postsList.length} with category ${category}`);
-
-		return postsList;
-	} catch (error) {
-		console.log("Error fetching posts:", error);
-		return [];
-	}
-}
-
-export async function getClientPostBySlug(
-	slug: string,
-): Promise<ClientCompletePost | null> {
-	try {
-		const post = await db.query.posts.findFirst({
-			columns: {
-				id: true,
-				title: true,
-				slug: true,
-				body: true,
-				thumbnail: true,
-				updatedAt: true,
-			},
-			with: {
-				author: {
-					columns: {
-						id: true,
-						email: true,
-						firstName: true,
-						lastName: true,
-					},
-				},
-				contents: {
-					with: {
-						type: true,
-					},
-					orderBy: {
-						index: "asc",
-					},
-				},
-				categories: true,
-			},
-			where: {
-				slug: slug,
-			},
-		});
-		if (!post) return null;
-
-		console.log(`Found post with slug "${slug}"`);
-		const contents: ClientContent[] = post.contents.map((content) => {
-			return {
-				id: content.id,
-				type: content.type.name,
-				payload: content.payload,
-				index: content.index,
-			};
-		});
-
-		return { ...post, contents: contents };
-	} catch (error) {
-		console.log(`Error fetchig post with slug "${slug}":`, error);
 		return null;
 	}
 }

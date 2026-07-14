@@ -1,5 +1,5 @@
 import { db } from "../index";
-import { Content } from "../schema/contents";
+import type { Content } from "../schema/contents";
 
 export async function getContentTypes(): Promise<Content[]> {
 	try {

@@ -1,7 +1,7 @@
-import { getPostsByAuthorId } from "@/lib/db/queries/posts";
-import { getUserBySession } from "@/lib/db/queries/users";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import { getPostsByAuthorId } from "@/lib/db/queries/posts";
+import { getUserBySession } from "@/lib/db/queries/users";
 import PostTable from "./table";
 
 export default async function DashboardPage() {
@@ -12,7 +12,7 @@ export default async function DashboardPage() {
 	const user = await getUserBySession(sessionId);
 	if (!user) return notFound();
 
-	const posts = await getPostsByAuthorId(user.id);
+	const posts = await getPostsByAuthorId(user);
 
 	return (
 		<div className="w-full min-h-screen bg-background p-8 font-lato text-foreground">

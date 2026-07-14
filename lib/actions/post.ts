@@ -1,12 +1,11 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { put } from "@vercel/blob";
 import { addCategory, removeCategory } from "../db/mutations/categories";
 import { createContent, deleteContent } from "../db/mutations/contents";
 import { updatePost } from "../db/mutations/posts";
-import { Post } from "../db/schema/posts";
-import { FormState } from "./interfaces";
-import { put } from "@vercel/blob";
+import type { Post } from "../db/schema/posts";
+import type { FormState } from "./interfaces";
 
 export async function PostAction(
 	post: Post,
@@ -19,49 +18,50 @@ export async function PostAction(
 	const title = formData.get("title") as string;
 	const introduction = formData.get("introduction") as string;
 
-	console.log(formData);
 	post.title = title;
 	post.body = introduction;
+	post.updatedAt = new Date();
+	post.isPublished = false;
+	post.publishedAt = null;
 	const image = formData.get("hero-image-upload") as File;
 	if (image.size > 0) {
-			try {
-				const blobPath = `${post.id}/${image.name}`;
+		try {
+			const blobPath = `${post.id}/${image.name}`;
 
-				const blob = await put(blobPath, image, {
-					access: "public",
-					addRandomSuffix: false,
-					contentType: image.type,
-					allowOverwrite: true,
-				});
+			const blob = await put(blobPath, image, {
+				access: "public",
+				addRandomSuffix: false,
+				contentType: image.type,
+				allowOverwrite: true,
+			});
 
-				post.thumbnail = blob.url;
-			} catch (error) {
-				console.error("Failed to write to Blob:", error);
-				return { success: false, error: "Failed to save the comment." };
-			}
+			post.thumbnail = blob.url;
+		} catch (error) {
+			console.error("Failed to write to Blob:", error);
+			return { success: false, error: "Failed to save the comment." };
 		}
-
-	await updatePost(post);
+	}
 
 	for (const [index, content] of contents.entries()) {
 		const [typeId, contentId] = content.id.split("/");
 		if (formData.has(content.id)) {
 			const image = formData.get(content.id) as File;
-			if (image.size === 0) continue;
-			try {
-				const blobPath = `${post.id}/${image.name}`;
+			if (image.size > 0) {
+				try {
+					const blobPath = `${post.id}/${image.name}`;
 
-				const blob = await put(blobPath, image, {
-					access: "public",
-					addRandomSuffix: false,
-					contentType: image.type,
-					allowOverwrite: true,
-				});
+					const blob = await put(blobPath, image, {
+						access: "public",
+						addRandomSuffix: false,
+						contentType: image.type,
+						allowOverwrite: true,
+					});
 
-				content.payload = blob.url;
-			} catch (error) {
-				console.error("Failed to write to Blob:", error);
-				return { success: false, error: "Failed to save the comment." };
+					content.payload = blob.url;
+				} catch (error) {
+					console.error("Failed to write to Blob:", error);
+					return { success: false, error: "Failed to save the comment." };
+				}
 			}
 		}
 		await createContent({
@@ -85,7 +85,7 @@ export async function PostAction(
 		}
 	}
 
-	revalidatePath(`/admin/${post.slug}`);
+	await updatePost(post);
 
 	return {
 		success: true,

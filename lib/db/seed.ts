@@ -4,7 +4,15 @@ import { categories } from "./schema/categories";
 import { contents } from "./schema/contents";
 
 const contentNames = ["Header", "Picture", "Paragraph"];
-const categoryNames = ["Romance", "Isekai", "Shounen"];
+const categoryNames = [
+	"Romance",
+	"Isekai",
+	"Shounen",
+	"Action",
+	"Adventure",
+	"Fantasy",
+	"Slice of Life",
+];
 async function contentTypes() {
 	for (const name of contentNames) {
 		await db.insert(contents).values({ name: name });
@@ -22,7 +30,9 @@ async function createAdminAccount() {
 		firstName: "Admin",
 		lastName: "Admin",
 		password: process.env.ADMIN_PASSWORD,
+		isAdmin: true,
 	});
 }
 
 createAdminAccount();
+contentTypes();

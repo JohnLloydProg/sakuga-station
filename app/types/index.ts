@@ -15,10 +15,11 @@ interface ClientPost {
 	title: string;
 	slug: string;
 	author: Author;
+	reads: number;
 	body: string | null;
 	thumbnail: string | null;
 	categories: Category[];
-	updatedAt: Date;
+	publishedAt: Date | null;
 }
 
 interface ClientContent {
@@ -33,10 +34,11 @@ interface ClientCompletePost {
 	title: string;
 	slug: string;
 	author: Author;
+	reads: number;
 	body: string | null;
 	thumbnail: string | null;
 	categories: Category[];
-	updatedAt: Date;
+	publishedAt: Date | null;
 	contents: ClientContent[];
 }
 
