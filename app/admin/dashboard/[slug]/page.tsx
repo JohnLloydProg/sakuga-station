@@ -12,12 +12,14 @@ export default async function PostPage({
 	const { slug } = await params;
 
 	const post = await getPostbyID(slug);
+	if (!post) return notFound();
+
 	const contentTypes = await getContentTypes();
 	const categoryTypes = await getCategories();
 
 	if (!post) return notFound();
 	return (
-		<div className="min-h-screen font-lato text-foreground">
+		<div className="min-h-screen font-lato text-foreground pb-10">
 			<PostForm
 				post={post}
 				contentTypes={contentTypes}

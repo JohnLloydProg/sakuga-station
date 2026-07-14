@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCommentsByPost } from "@/lib/db/queries/comments";
 import { getClientPostBySlug } from "@/lib/db/queries/posts";
@@ -35,12 +36,13 @@ export default async function PostPage({
 
 			<div className="flex flex-wrap gap-3 mb-6">
 				{post.categories.map((category) => (
-					<span
+					<Link
 						key={category.id}
+						href={`/posts?genreFilter=${category.name}`}
 						className="px-5 py-1 bg-accent text-foreground text-base font-josefin font-medium rounded shadow-sm cursor-pointer hover:bg-foreground hover:text-background transition-colors"
 					>
 						{category.name}
-					</span>
+					</Link>
 				))}
 			</div>
 

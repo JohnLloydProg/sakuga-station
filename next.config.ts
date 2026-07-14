@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
 			new URL("https://jxxd7vli0wushjuq.public.blob.vercel-storage.com/**"),
 		],
 	},
+	cacheComponents: true,
 };
 
 export default nextConfig;

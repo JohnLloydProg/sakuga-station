@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Footer from "./footer";
 import ClientHeader from "./header";
 import "./globals.css";
+import { Suspense } from "react";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -30,9 +31,13 @@ export default function RootLayout({
 			className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
 		>
 			<body className="min-h-full flex flex-col">
-				<ClientHeader />
+				<Suspense>
+					<ClientHeader />
+				</Suspense>
 				{children}
-				<Footer />
+				<Suspense>
+					<Footer />
+				</Suspense>
 			</body>
 		</html>
 	);

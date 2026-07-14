@@ -44,8 +44,6 @@ export async function savePostAction(
 	post.title = title;
 	post.body = introduction;
 	post.updatedAt = new Date();
-	post.isPublished = false;
-	post.publishedAt = null;
 	const image = formData.get("hero-image-upload") as File;
 	if (image.size > 0) {
 		try {

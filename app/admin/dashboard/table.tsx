@@ -78,9 +78,12 @@ export default function PostTable({
 			</div>
 
 			<div className="min-w-200 w-full flex flex-col">
-				<div className="grid grid-cols-[2fr_1fr_1fr_1fr] text-center items-center">
+				<div className="grid grid-cols-[3fr_0.5fr_1fr_1fr_1fr] text-center items-center">
 					<div className="bg-accent font-josefin font-bold py-4 text-left pl-6 rounded-tl-xl">
 						Post Title
+					</div>
+					<div className="bg-accent font-josefin font-bold py-4 border-l border-background">
+						Reads
 					</div>
 					<div className="bg-accent font-josefin font-bold py-4 border-l border-background">
 						Created On
@@ -102,31 +105,39 @@ export default function PostTable({
 							type="button"
 							key={post.id}
 							onClick={() => selectPost(post)}
-							className={`grid grid-cols-[2fr_1fr_1fr_1fr] text-center items-center ${rowBg} cursor-pointer hover:bg-secondary/80 transition-colors duration-150 group border-accent ${borderbottom} ${selectedPost === post ? "bg-secondary/80" : "bg-transparent"}`}
+							className={`grid grid-cols-[3fr_0.5fr_1fr_1fr_1fr] text-center items-stretch ${rowBg} cursor-pointer hover:bg-secondary/80 transition-colors duration-150 group border-accent ${borderbottom} ${selectedPost === post ? "bg-secondary/80" : "bg-transparent"}`}
 						>
 							<div
-								className={`flex items-center gap-5 py-5 text-left px-6 font-medium border-accent border-l  overflow-x-clip group-hover:text-accent font-josefin transition-colors ${selectedPost === post ? "text-accent" : "text-foreground"}`}
+								className={`flex items-center gap-5 py-5 text-left px-6 font-medium border-accent border-l group-hover:text-accent font-josefin transition-colors ${selectedPost === post ? "text-accent" : "text-foreground"}`}
 							>
-								<p>
-									{post.title.slice(0, 30)}
-									{post.title.length > 30 ? "..." : ""}
-								</p>
+								<p className="h-fit">{post.title}</p>
 								{post.isFeatured && (
-									<span className="font-josefin font-semibold text-xs rounded-full px-3 py-1 bg-accent">
+									<span className="font-josefin font-semibold text-xs rounded-full px-3 py-1 bg-accent group-hover:bg-foreground group-hover:text-background">
 										Featured
 									</span>
 								)}
 							</div>
+							<div
+								className={`flex items-center justify-center py-5 border-l border-accent`}
+							>
+								{post.reads}
+							</div>
 
-							<div className={`py-5 border-l border-accent`}>
+							<div
+								className={`flex items-center justify-center py-5 border-l border-accent`}
+							>
 								{post.createdAt.toLocaleDateString()}
 							</div>
 
-							<div className={`py-5 border-l border-accent`}>
+							<div
+								className={`flex items-center justify-center py-5 border-l border-accent`}
+							>
 								{post.updatedAt.toLocaleDateString()}
 							</div>
 
-							<div className={`py-5 border-l border-r border-accent`}>
+							<div
+								className={`flex items-center justify-center py-5 border-l border-r border-accent`}
+							>
 								{post.publishedAt?.toLocaleDateString() || "-"}
 							</div>
 						</button>
