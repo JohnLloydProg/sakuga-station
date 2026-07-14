@@ -6,7 +6,7 @@ import {
 	getClientPostsByCategory,
 	getFeaturedPost,
 } from "@/lib/db/queries/posts";
-import PostCard from "./posts/postCard";
+import PostCard from "./components/postCard";
 
 export default async function Home() {
 	const featuredPost = await getFeaturedPost();
@@ -174,7 +174,7 @@ export default async function Home() {
 						<Link
 							href={`/posts?genreFilter=${category.name}`}
 							key={category.id}
-							className="px-6 py-1.5 bg-background text-accent border border-accent/60 font-josefin font-bold text-lg rounded-full shadow-sm cursor-pointer hover:bg-accent hover:text-foreground transition-colors min-w-[130px] text-center"
+							className="px-6 py-1.5 bg-background text-accent border border-accent/60 font-josefin font-bold text-lg rounded-full shadow-sm cursor-pointer hover:bg-accent hover:text-foreground transition-colors min-w-32.5 text-center"
 						>
 							{category.name}
 						</Link>

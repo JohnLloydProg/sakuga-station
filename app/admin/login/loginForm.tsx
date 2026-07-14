@@ -26,9 +26,9 @@ export default function LoginForm() {
 			action={formAction}
 			className="w-full max-w-xl flex flex-col items-end bg-accent p-10 rounded-xl"
 		>
-			{state.error && (
+			{state.message && (
 				<h3 className="font-josefin w-full text-center font-bold mb-5">
-					{state.error}
+					{state.message}
 				</h3>
 			)}
 			<input

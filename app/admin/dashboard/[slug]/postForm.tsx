@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useActionState, useEffect, useRef, useState } from "react";
-import { PostAction } from "@/lib/actions/post";
-import { updatePost } from "@/lib/db/mutations/posts";
+import ErrorDisplay from "@/app/components/errorDisplay";
+import { publishPostAction, savePostAction } from "@/lib/actions/post";
 import type { Content } from "@/lib/db/schema/contents";
 import ContentEdit from "./content";
 import ImageInput from "./imageInput";
@@ -64,8 +64,9 @@ export default function PostForm({
 	const [clientContents, setClientContents] =
 		useState<ClientContent[]>(oldContents);
 
-	const [state, formAction] = useActionState(
-		PostAction.bind(null, postOnly)
+	const [status, formAction] = useActionState(
+		savePostAction
+			.bind(null, postOnly)
 			.bind([], clientContents)
 			.bind([], deletedContents.current)
 			.bind(null, categoryChanges),
@@ -73,12 +74,12 @@ export default function PostForm({
 	);
 
 	useEffect(() => {
-		if (state.success) {
+		if (status.success) {
 			setCategoryChanges(new Map());
 
 			deletedContents.current = [];
 		}
-	}, [state.success]);
+	}, [status.success]);
 
 	return (
 		<form action={formAction} className="w-full max-w-6xl flex mt-10 gap-10">
@@ -204,6 +205,8 @@ export default function PostForm({
 					))}
 				</div>
 
+				{status.errors && <ErrorDisplay errors={status.errors} />}
+
 				<button
 					type="submit"
 					className="w-full py-3 bg-accent text-foreground font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:opacity-90 transition"
@@ -214,10 +217,7 @@ export default function PostForm({
 					type="button"
 					className="w-full py-3 bg-accent text-foreground font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:opacity-90 transition"
 					onClick={async () => {
-						post.isPublished = !post.isPublished;
-						post.publishedAt = post.isPublished ? new Date() : null;
-
-						await updatePost(post);
+						await publishPostAction(post);
 					}}
 				>
 					{post.isPublished ? "Unpublish Post" : "Publish Post"}

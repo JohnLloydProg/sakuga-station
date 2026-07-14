@@ -1,8 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { createComment } from "../db/mutations/comments";
 import type { FormState } from "./interfaces";
+
+const commentInsertSchema = z.object({
+	postId: z.string(),
+	authorName: z.string().transform((val) => val.trim() || "Anonymouse"),
+	body: z.string().trim().min(3, "Comment must be at least 3 characters"),
+});
 
 export async function postComment(
 	postId: string,
@@ -10,17 +17,24 @@ export async function postComment(
 	_: FormState,
 	formData: FormData,
 ): Promise<FormState> {
-	const name = formData.get("name") as string;
-	const comment = formData.get("comment") as string;
+	const name = formData.get("name") || "";
+	const comment = formData.get("comment");
 
-	if (!comment)
-		return { success: false, error: "Please provide a comment to send" };
-
-	await createComment({
+	const parsed = commentInsertSchema.safeParse({
 		postId: postId,
 		body: comment,
-		authorName: name || "Anonymouse",
+		authorName: name,
 	});
+	if (!parsed.success) {
+		return { success: false, errors: z.flattenError(parsed.error).fieldErrors };
+	}
+
+	try {
+		await createComment(parsed.data);
+	} catch (error) {
+		console.error("Failed to create comment:", error);
+		return { success: false, message: "Failed to create comment" };
+	}
 
 	revalidatePath(`/posts/${slug}`);
 

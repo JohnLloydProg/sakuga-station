@@ -4,47 +4,32 @@ import { type Comment, comments } from "../schema/comments";
 
 export async function createComment(
 	commentProp: typeof comments.$inferInsert,
-): Promise<Comment | null> {
-	try {
-		const comment = (
-			await db.insert(comments).values(commentProp).returning()
-		).at(0);
-		if (!comment) return null;
+): Promise<Comment> {
+	const comment = (
+		await db.insert(comments).values(commentProp).returning()
+	).at(0);
+	if (!comment) throw new Error("Insertion returned no comment!");
 
-		console.log("Created comment with ID:", comment.id);
-
-		return comment;
-	} catch (error) {
-		console.log("Error while creating comment:", error);
-		return null;
-	}
+	return comment;
 }
 
-export async function updateComment(commentProp: Comment): Promise<Comment> {
-	try {
-		const comment = (
-			await db
-				.update(comments)
-				.set(commentProp)
-				.where(eq(comments.id, commentProp.id))
-				.returning()
-		).at(0);
-		if (!comment) return commentProp;
+export async function updateComment(
+	commentProp: typeof comments.$inferInsert,
+): Promise<Comment> {
+	if (!commentProp.id) throw new Error("Attempted to update without ID");
 
-		console.log("Updated comment with ID:", comment.id);
+	const comment = (
+		await db
+			.update(comments)
+			.set(commentProp)
+			.where(eq(comments.id, commentProp.id))
+			.returning()
+	).at(0);
+	if (!comment) throw new Error("Insertion returned no comment!");
 
-		return comment;
-	} catch (error) {
-		console.log("Error while updating comment:", error);
-		return commentProp;
-	}
+	return comment;
 }
 
 export async function deleteComment(commentId: string): Promise<void> {
-	try {
-		await db.delete(comments).where(eq(comments.id, commentId));
-		console.log("Deleted comment with ID:", commentId);
-	} catch (error) {
-		console.log("Error while deleting comment:", error);
-	}
+	await db.delete(comments).where(eq(comments.id, commentId));
 }

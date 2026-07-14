@@ -1,5 +1,5 @@
 export interface FormState {
 	success: boolean;
 	message?: string;
-	error?: string;
+	errors?: Record<string, string[] | undefined>;
 }

@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { readPost } from "@/lib/db/mutations/posts";
+import { readPostAction } from "@/lib/actions/post";
 
 export default function ReadTrigger({ postId }: { postId: string }) {
 	useEffect(() => {
 		const timer = setTimeout(async () => {
-			await readPost(postId);
+			await readPostAction(postId);
 		}, 5000);
 
 		return () => clearTimeout(timer);

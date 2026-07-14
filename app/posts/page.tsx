@@ -5,8 +5,8 @@ import {
 	getClientPostsByCategory,
 	getMostReadPosts,
 } from "@/lib/db/queries/posts";
+import PostCard from "../components/postCard";
 import PaginationNav from "./pagination";
-import PostCard from "./postCard";
 import SearchBar from "./searchBar";
 
 export default async function PostsPage({

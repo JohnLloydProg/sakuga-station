@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import ErrorDisplay from "@/app/components/errorDisplay";
 import { postComment } from "@/lib/actions/comment";
 
 export default function CommentForm({ post }: { post: ClientCompletePost }) {
@@ -20,11 +21,7 @@ export default function CommentForm({ post }: { post: ClientCompletePost }) {
 				<h3 className="font-josefin text-lg font-bold">{status.message}</h3>
 			)}
 
-			{!status.success && (
-				<h3 className="font-josefin text-lg font-bold text-amber-700">
-					{status.error}
-				</h3>
-			)}
+			{status.errors && <ErrorDisplay errors={status.errors} />}
 
 			<div className="flex flex-col gap-1.5">
 				<label
@@ -38,7 +35,7 @@ export default function CommentForm({ post }: { post: ClientCompletePost }) {
 				</label>
 				<input
 					id="name"
-					name="nam"
+					name="name"
 					type="text"
 					placeholder="Anonymous Otaku"
 					className="w-full md:w-1/3 px-4 py-2 text-sm bg-background rounded border border-accent/40 text-foreground placeholder-muted/50 focus:outline-none focus:ring-2 focus:ring-accent"

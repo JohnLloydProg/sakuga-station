@@ -1,13 +1,36 @@
 "use server";
 
 import { put } from "@vercel/blob";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { addCategory, removeCategory } from "../db/mutations/categories";
-import { createContent, deleteContent } from "../db/mutations/contents";
-import { updatePost } from "../db/mutations/posts";
+import { deleteContent, upsertContent } from "../db/mutations/contents";
+import {
+	createPost,
+	deletePost,
+	featurePost,
+	readPost,
+	updatePost,
+} from "../db/mutations/posts";
+import type { postContents } from "../db/schema/contents";
 import type { Post } from "../db/schema/posts";
 import type { FormState } from "./interfaces";
 
-export async function PostAction(
+const postUpdateSchema = z.object({
+	title: z.string().min(10, "Title must be at least 10 characters!"),
+	body: z.string().optional(),
+	thumnail: z.string().optional(),
+});
+
+const contentInsertSchema = z.object({
+	id: z.string(),
+	postId: z.string(),
+	contentId: z.string(),
+	payload: z.string().min(5, "Content needs to have a payload"),
+	index: z.int(),
+});
+
+export async function savePostAction(
 	post: Post,
 	contents: ClientContent[],
 	deletedContents: string[],
@@ -38,10 +61,17 @@ export async function PostAction(
 			post.thumbnail = blob.url;
 		} catch (error) {
 			console.error("Failed to write to Blob:", error);
-			return { success: false, error: "Failed to save the comment." };
+			return { success: false, message: "Failed to save the comment." };
 		}
 	}
+	const parsedPost = postUpdateSchema.safeParse(post);
+	if (!parsedPost.success)
+		return {
+			success: false,
+			errors: z.flattenError(parsedPost.error).fieldErrors,
+		};
 
+	const contentData: (typeof postContents.$inferInsert)[] = [];
 	for (const [index, content] of contents.entries()) {
 		const [typeId, contentId] = content.id.split("/");
 		if (formData.has(content.id)) {
@@ -60,35 +90,147 @@ export async function PostAction(
 					content.payload = blob.url;
 				} catch (error) {
 					console.error("Failed to write to Blob:", error);
-					return { success: false, error: "Failed to save the comment." };
+					return { success: false, message: "Failed to save the comment." };
 				}
 			}
 		}
-		await createContent({
+		const parsedContent = contentInsertSchema.safeParse({
 			id: contentId,
 			postId: post.id,
 			contentId: typeId,
 			payload: content.payload,
 			index: index,
 		});
+
+		if (!parsedContent.success)
+			return {
+				success: false,
+				errors: z.flattenError(parsedContent.error).fieldErrors,
+			};
+
+		contentData.push(parsedContent.data);
 	}
 
 	for (const deletedContent of deletedContents) {
-		await deleteContent(deletedContent);
+		try {
+			await deleteContent(deletedContent);
+		} catch (error) {
+			console.error("Failed to delete content:", error);
+			return { success: false, message: "Failed to delete content" };
+		}
 	}
 
 	for (const [categoryId, value] of categoryChanges.entries()) {
 		if (value === "Add") {
-			await addCategory(categoryId, post.id);
+			try {
+				await addCategory(categoryId, post.id);
+			} catch (error) {
+				console.error("Failed to add category:", error);
+				return { success: false, message: "Failed to add category" };
+			}
 		} else {
-			await removeCategory(categoryId, post.id);
+			try {
+				await removeCategory(categoryId, post.id);
+			} catch (error) {
+				console.error("Failed to remove category:", error);
+				return { success: false, message: "Failed to remove category" };
+			}
 		}
 	}
 
-	await updatePost(post);
+	for (const data of contentData) {
+		try {
+			await upsertContent(data);
+		} catch (error) {
+			console.error("Failed to upsert content:", error);
+			return { success: false, message: "Failed to upsert content" };
+		}
+	}
+
+	try {
+		await updatePost(post);
+		revalidatePath(`/admin/dashboard/${post.slug}`);
+		revalidatePath(`/posts/${post.slug}`);
+	} catch (error) {
+		console.error("Failed to update post:", error);
+		return { success: false, message: "Failed to update post" };
+	}
 
 	return {
 		success: true,
 		message: "Posted successfully.",
 	};
+}
+
+export async function createBlankPostAction(
+	userId: string,
+): Promise<FormState> {
+	try {
+		await createPost({
+			authorId: userId,
+			title: "Untitled Post",
+			slug: crypto.randomUUID(),
+		});
+
+		revalidatePath("/admin/dashboard");
+
+		return { success: true };
+	} catch (error) {
+		console.error("Failed to create post:", error);
+		return { success: false, message: "Failed to create blank post" };
+	}
+}
+
+export async function deletePostAction(postId: string): Promise<FormState> {
+	try {
+		await deletePost(postId);
+
+		revalidatePath("/admin/dashboard");
+
+		return { success: true };
+	} catch (error) {
+		console.error("Failed to delete post:", error);
+		return { success: false, message: "Failed to delete post." };
+	}
+}
+
+export async function readPostAction(postId: string): Promise<FormState> {
+	try {
+		await readPost(postId);
+
+		return { success: true };
+	} catch (error) {
+		console.error("Failed to increment read count:", error);
+		return { success: false, message: "Failed to increment read count." };
+	}
+}
+
+export async function featurePostAction(postId: string): Promise<FormState> {
+	try {
+		await featurePost(postId);
+
+		revalidatePath("/admin/dashboard");
+		revalidatePath("/");
+
+		return { success: true };
+	} catch (error) {
+		console.error("Failed to feature post:", error);
+		return { success: false, message: "Failed to feature post." };
+	}
+}
+
+export async function publishPostAction(post: Post): Promise<FormState> {
+	post.isPublished = !post.isPublished;
+	post.publishedAt = post.isPublished ? new Date() : null;
+
+	try {
+		await updatePost(post);
+
+		revalidatePath(`/admin/dashboard/${post.slug}`);
+
+		return { success: true };
+	} catch (error) {
+		console.error("Failed to publish post:", error);
+		return { success: false, message: "Failed to publish post." };
+	}
 }

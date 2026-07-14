@@ -14,13 +14,13 @@ export async function loginAction(
 	const password = formData.get("password") as string;
 
 	if (!email || !password)
-		return { success: false, error: "Indicate email and password." };
+		return { success: false, message: "Indicate email and password." };
 
 	const user = await getUserByEmailPassword(email, password);
-	if (!user) return { success: false, error: "Wrong email or password!" };
+	if (!user) return { success: false, message: "Wrong email or password!" };
 
 	const sessionId = await createSession(user);
-	if (!sessionId) return { success: false, error: "Cannot create session" };
+	if (!sessionId) return { success: false, message: "Cannot create session" };
 
 	const cookieStore = await cookies();
 	cookieStore.set("sessionId", sessionId);

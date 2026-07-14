@@ -2,7 +2,11 @@
 
 import { redirect } from "next/navigation";
 import { useState } from "react";
-import { createPost, deletePost, featurePost } from "@/lib/db/mutations/posts";
+import {
+	createBlankPostAction,
+	deletePostAction,
+	featurePostAction,
+} from "@/lib/actions/post";
 import type { Post } from "@/lib/db/schema/posts";
 import type { User } from "@/lib/db/schema/users";
 
@@ -30,7 +34,7 @@ export default function PostTable({
 							onClick={async () => {
 								if (!selectedPost) return;
 
-								await featurePost(selectedPost.id);
+								await featurePostAction(selectedPost.id);
 							}}
 							disabled={selectedPost === null}
 						>
@@ -43,7 +47,7 @@ export default function PostTable({
 						onClick={async () => {
 							if (!selectedPost) return;
 
-							await deletePost(selectedPost.id);
+							await deletePostAction(selectedPost.id);
 						}}
 						disabled={selectedPost === null}
 					>
@@ -53,11 +57,7 @@ export default function PostTable({
 						type="button"
 						className="px-6 py-2 bg-accent text-foreground font-josefin font-bold rounded-md hover:opacity-90 transition"
 						onClick={async () => {
-							await createPost({
-								authorId: user.id,
-								title: "Untitled Post",
-								slug: crypto.randomUUID(),
-							});
+							await createBlankPostAction(user.id);
 						}}
 					>
 						New
