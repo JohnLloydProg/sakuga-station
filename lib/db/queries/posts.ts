@@ -7,6 +7,7 @@ import type { User } from "../schema/users";
 export async function getClientPosts(
 	offset: number,
 	search?: string,
+	limit: number = 6,
 ): Promise<[ClientPost[], number]> {
 	try {
 		const postsList = await db.query.posts.findMany({
@@ -37,9 +38,9 @@ export async function getClientPosts(
 				},
 			},
 			orderBy: {
-				updatedAt: "desc",
+				publishedAt: "desc",
 			},
-			limit: 6,
+			limit: limit,
 			offset: offset * 6,
 		});
 
@@ -65,6 +66,7 @@ export async function getClientPostsByCategory(
 	category: string,
 	offset: number,
 	search?: string,
+	limit: number = 6,
 ): Promise<[ClientPost[], number]> {
 	try {
 		const postsList = await db.query.posts.findMany({
@@ -98,9 +100,9 @@ export async function getClientPostsByCategory(
 				},
 			},
 			orderBy: {
-				updatedAt: "desc",
+				publishedAt: "desc",
 			},
-			limit: 6,
+			limit: limit,
 			offset: offset * 6,
 		});
 
@@ -253,6 +255,45 @@ export async function getPostbyID(postId: string) {
 		return post;
 	} catch (error) {
 		console.log(`Error while getting post with ID %${postId}: ${error}`);
+		return null;
+	}
+}
+
+export async function getFeaturedPost(): Promise<ClientPost | null> {
+	try {
+		const post = await db.query.posts.findFirst({
+			columns: {
+				id: true,
+				title: true,
+				slug: true,
+				body: true,
+				reads: true,
+				thumbnail: true,
+				publishedAt: true,
+			},
+			with: {
+				author: {
+					columns: {
+						id: true,
+						email: true,
+						firstName: true,
+						lastName: true,
+					},
+				},
+				categories: true,
+			},
+			where: {
+				isPublished: true,
+				isFeatured: true,
+			},
+		});
+		if (!post) return null;
+
+		console.log("Got post with id:", post.id);
+
+		return post;
+	} catch (error) {
+		console.log("Error while getting featured post:", error);
 		return null;
 	}
 }
