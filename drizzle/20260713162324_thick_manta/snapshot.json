@@ -1,8 +1,8 @@
 {
 	"version": "8",
 	"dialect": "postgres",
-	"id": "59c3495b-651c-4e68-a9be-08a331e865ba",
-	"prevIds": ["00000000-0000-0000-0000-000000000000"],
+	"id": "4fe1a496-2c4a-4b03-aec1-357ae39efe61",
+	"prevIds": ["e01312da-f62f-4210-85ad-942e71328bb1"],
 	"ddl": [
 		{
 			"isRlsEnabled": false,
@@ -403,19 +403,6 @@
 			"table": "posts"
 		},
 		{
-			"type": "varchar(50)",
-			"typeSchema": null,
-			"notNull": true,
-			"dimensions": 0,
-			"default": "'draft'",
-			"generated": null,
-			"identity": null,
-			"name": "status",
-			"entityType": "columns",
-			"schema": "public",
-			"table": "posts"
-		},
-		{
 			"type": "text",
 			"typeSchema": null,
 			"notNull": false,
@@ -424,6 +411,45 @@
 			"generated": null,
 			"identity": null,
 			"name": "thumbnail_url",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "posts"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "false",
+			"generated": null,
+			"identity": null,
+			"name": "is_published",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "posts"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "false",
+			"generated": null,
+			"identity": null,
+			"name": "is_featured",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "posts"
+		},
+		{
+			"type": "integer",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "0",
+			"generated": null,
+			"identity": null,
+			"name": "reads",
 			"entityType": "columns",
 			"schema": "public",
 			"table": "posts"
@@ -958,6 +984,14 @@
 			"entityType": "fks",
 			"schema": "public",
 			"table": "sessions"
+		},
+		{
+			"columns": ["post_id", "category_id"],
+			"nameExplicit": false,
+			"name": "post_categories_pkey",
+			"entityType": "pks",
+			"schema": "public",
+			"table": "post_categories"
 		},
 		{
 			"columns": ["id"],

@@ -1,65 +1,79 @@
 import { defineRelations } from "drizzle-orm";
-import { sessions, users } from "./users";
-import { posts } from "./posts";
+import { categories, postCategories } from "./categories";
 import { comments } from "./comments";
 import { contents, postContents } from "./contents";
-import { categories, postCategories } from "./categories";
 import { emails, subscriptions } from "./emails";
+import { posts } from "./posts";
+import { sessions, users } from "./users";
 
-export const usersRelations = defineRelations({users, posts, comments, sessions, contents, postContents, categories, postCategories, emails, subscriptions}, (r) => ({
-    posts: {
-        author: r.one.users({
-            from: r.posts.authorId,
-            to: r.users.id,
-            optional: false
-        }),
-        comments: r.many.comments(),
-        contents: r.many.postContents(),
-        categories: r.many.categories({
-            from: r.posts.id.through(r.postCategories.postId),
-            to: r.categories.id.through(r.postCategories.categoryId)
-        })
-    },
-    users: {
-        posts: r.many.posts(),
-        session: r.one.sessions()
-    },
-    sessions: {
-        users: r.one.users({
-            from: r.sessions.userId,
-            to: r.users.id,
-            optional: false
-        })
-    },
-    comments: {
-        post: r.one.posts({
-            from: r.comments.postId,
-            to: r.posts.id
-        })
-    },
-    postContents: {
-        type: r.one.contents({
-            from: r.postContents.contentId,
-            to: r.contents.id,
-            optional: false
-        }),
-        post: r.one.posts({
-            from: r.postContents.postId,
-            to: r.posts.id,
-            optional: false,
-        })
-    },
-    contents: {
-        usage: r.many.postContents()
-    },
-    categories: {
-        posts: r.many.posts(),
-        emails: r.many.emails({
-            from: r.categories.id.through(r.subscriptions.categoryId),
-            to: r.emails.id.through(r.subscriptions.emailId)
-        })
-    },
-    emails: {
-        categories: r.many.categories()
-    }
-}));
+export const usersRelations = defineRelations(
+	{
+		users,
+		posts,
+		comments,
+		sessions,
+		contents,
+		postContents,
+		categories,
+		postCategories,
+		emails,
+		subscriptions,
+	},
+	(r) => ({
+		posts: {
+			author: r.one.users({
+				from: r.posts.authorId,
+				to: r.users.id,
+				optional: false,
+			}),
+			comments: r.many.comments(),
+			contents: r.many.postContents(),
+			categories: r.many.categories({
+				from: r.posts.id.through(r.postCategories.postId),
+				to: r.categories.id.through(r.postCategories.categoryId),
+			}),
+		},
+		users: {
+			posts: r.many.posts(),
+			session: r.one.sessions(),
+		},
+		sessions: {
+			users: r.one.users({
+				from: r.sessions.userId,
+				to: r.users.id,
+				optional: false,
+			}),
+		},
+		comments: {
+			post: r.one.posts({
+				from: r.comments.postId,
+				to: r.posts.id,
+			}),
+		},
+		postContents: {
+			type: r.one.contents({
+				from: r.postContents.contentId,
+				to: r.contents.id,
+				optional: false,
+			}),
+			post: r.one.posts({
+				from: r.postContents.postId,
+				to: r.posts.id,
+				optional: false,
+			}),
+		},
+		contents: {
+			usage: r.many.postContents(),
+		},
+		categories: {
+			posts: r.many.posts(),
+			emails: r.many.emails({
+				from: r.categories.id.through(r.subscriptions.categoryId),
+				to: r.emails.id.through(r.subscriptions.emailId),
+			}),
+		},
+		emails: {
+			categories: r.many.categories(),
+		},
+	}),
+);

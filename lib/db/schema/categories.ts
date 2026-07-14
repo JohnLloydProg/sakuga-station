@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, index, primaryKey } from "drizzle-orm/pg-core";
+import { index, pgTable, primaryKey, uuid, varchar } from "drizzle-orm/pg-core";
 import { posts } from "./posts";
 
 export const categories = pgTable("categories", {
