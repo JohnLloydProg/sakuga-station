@@ -1,14 +1,14 @@
 "use client";
 
-import { logoutAction } from "@/lib/actions/auth";
 import Image from "next/image";
+import { logoutAction } from "@/lib/actions/auth";
 
 export default function AdminHeader() {
 	return (
 		<header className="bg-secondary flex justify-center w-full h-15">
 			<div className="flex items-center justify-between w-full max-w-6xl">
 				<div className="flex gap-3">
-					<Image src="/globe.svg" width={40} height={40} alt="ghilbi icon"/>
+					<Image src="/icon.png" width={40} height={40} alt="ghilbi icon" />
 					<h1 className="font-josefin text-3xl">
 						Sakuga<span className="text-accent font-bold">Station</span>
 					</h1>

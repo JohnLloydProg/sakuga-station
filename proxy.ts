@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { db } from "./lib/db";
 
 export async function proxy(request: NextRequest) {
@@ -12,9 +12,11 @@ export async function proxy(request: NextRequest) {
 			id: sessionId,
 		},
 	});
-	if (!session) return NextResponse.redirect(new URL("/admin/login"));
-	console.log(request.nextUrl);
-	if (request.nextUrl.pathname === "/admin") return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+	if (!session)
+		return NextResponse.redirect(new URL("/admin/login", request.url));
+
+	if (request.nextUrl.pathname === "/admin")
+		return NextResponse.redirect(new URL("/admin/dashboard", request.url));
 }
 
 export const config = {
