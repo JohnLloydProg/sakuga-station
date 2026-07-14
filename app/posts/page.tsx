@@ -5,9 +5,9 @@ import {
 	getClientPostsByCategory,
 	getMostReadPosts,
 } from "@/lib/db/queries/posts";
+import PaginationNav from "./pagination";
 import PostCard from "./postCard";
 import SearchBar from "./searchBar";
-import PaginationNav from "./pagination";
 
 export default async function PostsPage({
 	searchParams,
@@ -28,6 +28,10 @@ export default async function PostsPage({
 
 		return params.toString();
 	};
+	const genreNotSelected =
+		"px-4 py-1 bg-accent text-foreground text-sm font-josefin font-bold rounded hover:bg-foreground hover:text-background transition-colors shadow-sm";
+	const genreSelected =
+		"px-4 py-1 bg-foreground text-background text-sm font-josefin font-bold rounded shadow-sm";
 
 	let posts: ClientPost[] = [];
 	let total = 0;
@@ -100,7 +104,11 @@ export default async function PostsPage({
 							<Link
 								href={`/posts?${createQueryString("genreFilter", genre.name)}`}
 								key={genre.id}
-								className="px-4 py-1 bg-accent text-foreground text-sm font-josefin font-bold rounded hover:bg-foreground hover:text-background transition-colors shadow-sm"
+								className={
+									genre.name === resolvedParams.genreFilter
+										? genreSelected
+										: genreNotSelected
+								}
 							>
 								{genre.name}
 							</Link>
