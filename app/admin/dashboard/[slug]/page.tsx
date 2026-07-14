@@ -1,8 +1,8 @@
+import { notFound } from "next/navigation";
+import { getCategories } from "@/lib/db/queries/categories";
+import { getContentTypes } from "@/lib/db/queries/content";
 import { getPostbyID } from "@/lib/db/queries/posts";
 import PostForm from "./postForm";
-import { notFound } from "next/navigation";
-import { getContentTypes } from "@/lib/db/queries/content";
-import { getCategories } from "@/lib/db/queries/categories";
 
 export default async function PostPage({
 	params,

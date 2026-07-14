@@ -1,9 +1,9 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { createSession } from "../db/mutations/users";
 import { getUserByEmailPassword } from "../db/queries/users";
-import { redirect } from "next/navigation";
 import type { FormState } from "./interfaces";
 
 export async function loginAction(

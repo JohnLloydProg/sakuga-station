@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../index";
-import { Comment, comments } from "../schema/comments";
+import { type Comment, comments } from "../schema/comments";
 
 export async function createComment(
 	commentProp: typeof comments.$inferInsert,

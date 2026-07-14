@@ -1,8 +1,6 @@
-"use server";
-
-import { DrizzleQueryError, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "../index";
-import { PostContent, postContents } from "../schema/contents";
+import { type PostContent, postContents } from "../schema/contents";
 
 export async function createContent(
 	contentProp: typeof postContents.$inferInsert,

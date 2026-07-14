@@ -5,7 +5,7 @@ import { useFormStatus } from "react-dom";
 import { loginAction } from "@/lib/actions/auth";
 
 function SubmitButton() {
-	const { pending, data } = useFormStatus();
+	const { pending } = useFormStatus();
 
 	return (
 		<button
@@ -18,13 +18,13 @@ function SubmitButton() {
 }
 
 export default function LoginForm() {
-	const [state, formAction, isPending] = useActionState(loginAction, {
+	const [state, formAction] = useActionState(loginAction, {
 		success: false,
 	});
 	return (
 		<form
 			action={formAction}
-			className="w-full max-w-lg flex flex-col items-end bg-accent p-10 rounded-xl"
+			className="w-full max-w-xl flex flex-col items-end bg-accent p-10 rounded-xl"
 		>
 			{state.error && (
 				<h3 className="font-josefin w-full text-center font-bold mb-5">

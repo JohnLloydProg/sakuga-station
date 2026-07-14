@@ -1,5 +1,5 @@
 import { db } from "..";
-import { User } from "../schema/users";
+import type { User } from "../schema/users";
 
 export async function getUserByEmailPassword(
 	email: string,

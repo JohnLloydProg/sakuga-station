@@ -1,6 +1,5 @@
-import { DrizzleQueryError, eq } from "drizzle-orm";
 import { db } from "..";
-import { sessions, User, users } from "../schema/users";
+import { sessions, type User, users } from "../schema/users";
 
 export async function createUser(
 	userProp: typeof users.$inferInsert,
