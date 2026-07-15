@@ -60,7 +60,7 @@ export async function savePostAction(
 			post.thumbnail = blob.url;
 		} catch (error) {
 			console.error("Failed to write to Blob:", error);
-			return { success: false, message: "Failed to save the comment." };
+			return { success: false, message: "Failed to save the thumbnail." };
 		}
 	}
 
@@ -76,7 +76,8 @@ export async function savePostAction(
 		const [typeId, contentId] = content.id.split("/");
 		if (formData.has(content.id)) {
 			if (typeof formData.get(content.id) === "string") {
-				content.payload = formData.get(content.id) as string;
+				const richText = formData.get(content.id) as string;
+				content.payload = richText === "<p></p>" ? "" : richText;
 			} else {
 				const image = formData.get(content.id) as File;
 				if (image.size > 0) {
@@ -93,7 +94,7 @@ export async function savePostAction(
 						content.payload = blob.url;
 					} catch (error) {
 						console.error("Failed to write to Blob:", error);
-						return { success: false, message: "Failed to save the comment." };
+						return { success: false, message: "Failed to save the image." };
 					}
 				}
 			}
@@ -120,7 +121,7 @@ export async function savePostAction(
 			await deleteContent(deletedContent);
 		} catch (error) {
 			console.error("Failed to delete content:", error);
-			return { success: false, message: "Failed to delete content" };
+			return { success: false, message: "Failed to delete content." };
 		}
 	}
 
@@ -130,14 +131,14 @@ export async function savePostAction(
 				await addCategory(categoryId, post.id);
 			} catch (error) {
 				console.error("Failed to add category:", error);
-				return { success: false, message: "Failed to add category" };
+				return { success: false, message: "Failed to add category." };
 			}
 		} else {
 			try {
 				await removeCategory(categoryId, post.id);
 			} catch (error) {
 				console.error("Failed to remove category:", error);
-				return { success: false, message: "Failed to remove category" };
+				return { success: false, message: "Failed to remove category." };
 			}
 		}
 	}
@@ -147,7 +148,7 @@ export async function savePostAction(
 			await upsertContent(data);
 		} catch (error) {
 			console.error("Failed to upsert content:", error);
-			return { success: false, message: "Failed to upsert content" };
+			return { success: false, message: "Failed to upsert content." };
 		}
 	}
 
@@ -157,12 +158,12 @@ export async function savePostAction(
 		revalidatePath(`/posts/${post.slug}`);
 	} catch (error) {
 		console.error("Failed to update post:", error);
-		return { success: false, message: "Failed to update post" };
+		return { success: false, message: "Failed to update post." };
 	}
 
 	return {
 		success: true,
-		message: "Posted successfully.",
+		message: "Done saving the post.",
 	};
 }
 

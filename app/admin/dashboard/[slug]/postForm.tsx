@@ -1,12 +1,20 @@
 "use client";
 
-import Link from "next/link";
-import { useActionState, useEffect, useRef, useState } from "react";
+import {
+	useActionState,
+	useEffect,
+	useRef,
+	useState,
+	useTransition,
+} from "react";
 import ErrorDisplay from "@/app/components/errorDisplay";
 import { publishPostAction, savePostAction } from "@/lib/actions/post";
 import type { Content } from "@/lib/db/schema/contents";
 import ContentEdit from "./content";
 import ImageInput from "./imageInput";
+import Image from "next/image";
+import { useFormStatus } from "react-dom";
+import { redirect } from "next/navigation";
 
 interface PostProp {
 	id: string;
@@ -18,6 +26,7 @@ interface PostProp {
 	body: string | null;
 	isPublished: boolean;
 	isFeatured: boolean;
+	commentApproval: boolean;
 	thumbnail: string | null;
 	updatedAt: Date;
 	publishedAt: Date | null;
@@ -36,6 +45,20 @@ interface PostProp {
 		id: string;
 		name: string;
 	}[];
+}
+
+function SubmitButton({ isDisabled }: { isDisabled: boolean }) {
+	const { pending } = useFormStatus();
+
+	return (
+		<button
+			type="submit"
+			className="w-full py-3 bg-accent text-foreground cursor-pointer font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:bg-foreground hover:text-background transition  disabled:opacity-50 disabled:cursor-not-allowed"
+			disabled={pending || isDisabled}
+		>
+			{pending ? "Saving Post..." : "Save Post"}
+		</button>
+	);
 }
 
 export default function PostForm({
@@ -64,7 +87,7 @@ export default function PostForm({
 	const [clientContents, setClientContents] =
 		useState<ClientContent[]>(oldContents);
 
-	const [status, formAction] = useActionState(
+	const [status, formAction, isSaving] = useActionState(
 		savePostAction
 			.bind(null, postOnly)
 			.bind([], clientContents)
@@ -72,6 +95,7 @@ export default function PostForm({
 			.bind(null, categoryChanges),
 		{ success: false },
 	);
+	const [isPublishing, startTransition] = useTransition();
 
 	useEffect(() => {
 		if (status.success) {
@@ -82,7 +106,7 @@ export default function PostForm({
 	}, [status.success]);
 
 	return (
-		<form action={formAction} className="w-full max-w-6xl flex mt-10 gap-10">
+		<form action={formAction} className="w-full max-w-6xl flex mt-5 gap-10">
 			<div className="flex flex-col gap-8 w-full">
 				<div className="bg-secondary/40 p-6 rounded-xl border border-secondary/20 shadow-sm">
 					<h2 className="font-josefin text-2xl font-bold mb-6">
@@ -174,7 +198,7 @@ export default function PostForm({
 			</div>
 
 			<div className="flex flex-col gap-4 lg:sticky lg:top-8 h-fit w-100">
-				<div className="bg-secondary/40 p-5 rounded border-l-4 border-accent space-y-2">
+				<div className="bg-secondary/40 p-5 grid grid-cols-2 rounded border-l-4 border-accent space-y-2">
 					{categoryTypes.map((category) => (
 						<div key={category.id} className="flex items-center gap-3">
 							<input
@@ -205,29 +229,65 @@ export default function PostForm({
 					))}
 				</div>
 
+				<div className="h-6 flex items-center justify-center font-josefin font-semibold text-sm transition-all duration-300">
+					{status.success && (
+						<span className="flex items-center gap-2 text-accent">
+							<Image
+								src="/tick-circle.svg"
+								alt="tick-circle"
+								width={16}
+								height={16}
+								className="w-4 h-4"
+							/>
+							{status.message}
+						</span>
+					)}
+
+					{!status.success && (status.message || status.errors) && (
+						<span className="flex items-center gap-2 text-red-500/80">
+							<Image
+								src="/info-circle.svg"
+								alt="info-circle"
+								width={16}
+								height={16}
+								className="w-4 h-4"
+							/>
+							{status.message}
+						</span>
+					)}
+				</div>
+
 				{status.errors && <ErrorDisplay errors={status.errors} />}
 
+				<SubmitButton isDisabled={isPublishing} />
 				<button
-					type="submit"
-					className="w-full py-3 bg-accent text-foreground font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:bg-foreground hover:text-background transition"
+					type="button"
+					className="w-full py-3 bg-accent text-foreground cursor-pointer font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:bg-foreground hover:text-background transition disabled:opacity-50 disabled:cursor-not-allowed"
+					disabled={isSaving || isPublishing}
+					onClick={() => {
+						startTransition(async () => {
+							await publishPostAction(post);
+						});
+					}}
 				>
-					Save Post
+					{post.isPublished
+						? isPublishing
+							? "Unpublishing Post..."
+							: "Unpublish Post"
+						: isPublishing
+							? "Publishing Post..."
+							: "Publish Post"}
 				</button>
 				<button
 					type="button"
-					className="w-full py-3 bg-accent text-foreground font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:bg-foreground hover:text-background transition"
-					onClick={async () => {
-						await publishPostAction(post);
+					className="w-full py-3 bg-accent text-foreground cursor-pointer font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:bg-foreground hover:text-background transition disabled:opacity-50 disabled:cursor-not-allowed"
+					disabled={isSaving || isPublishing}
+					onClick={() => {
+						redirect("/admin/dashboard");
 					}}
 				>
-					{post.isPublished ? "Unpublish Post" : "Publish Post"}
-				</button>
-				<Link
-					href="/admin/dashboard"
-					className="w-full py-3 bg-accent text-foreground font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:bg-foreground hover:text-background transition text-center"
-				>
 					Back
-				</Link>
+				</button>
 			</div>
 		</form>
 	);
