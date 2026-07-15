@@ -30,7 +30,7 @@ export default function PostTable({
 					{user.isAdmin && (
 						<button
 							type="button"
-							className="px-6 py-2 bg-accent text-foreground font-josefin font-bold rounded-md hover:opacity-90 transition"
+							className="px-6 py-2 bg-accent text-foreground font-josefin font-bold rounded-md hover:bg-foreground hover:text-background transition"
 							onClick={async () => {
 								if (!selectedPost) return;
 
@@ -43,7 +43,7 @@ export default function PostTable({
 					)}
 					<button
 						type="button"
-						className="px-6 py-2 bg-accent text-foreground font-josefin font-bold rounded-md hover:opacity-90 transition"
+						className="px-6 py-2 bg-accent text-foreground font-josefin font-bold rounded-md hover:bg-foreground hover:text-background transition"
 						onClick={async () => {
 							if (!selectedPost) return;
 
@@ -55,7 +55,7 @@ export default function PostTable({
 					</button>
 					<button
 						type="button"
-						className="px-6 py-2 bg-accent text-foreground font-josefin font-bold rounded-md hover:opacity-90 transition"
+						className="px-6 py-2 bg-accent text-foreground font-josefin font-bold rounded-md hover:bg-foreground hover:text-background transition"
 						onClick={async () => {
 							await createBlankPostAction(user.id);
 						}}
@@ -64,7 +64,7 @@ export default function PostTable({
 					</button>
 					<button
 						type="button"
-						className="px-6 py-2 bg-accent text-foreground font-josefin font-bold rounded-md hover:opacity-90 transition"
+						className="px-6 py-2 bg-accent text-foreground font-josefin font-bold rounded-md hover:bg-foreground hover:text-background transition"
 						onClick={() => {
 							if (!selectedPost) return;
 

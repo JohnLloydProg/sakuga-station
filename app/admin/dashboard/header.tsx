@@ -16,7 +16,7 @@ export default function AdminHeader() {
 				</Link>
 				<button
 					type="button"
-					className="bg-accent rounded-full text-lg font-josefin font-bold py-1 px-4"
+					className="bg-accent rounded-full text-lg font-josefin hover:bg-foreground hover:text-background font-bold py-1 px-4"
 					onClick={async () => {
 						await logoutAction();
 					}}

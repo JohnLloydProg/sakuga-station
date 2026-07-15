@@ -209,13 +209,13 @@ export default function PostForm({
 
 				<button
 					type="submit"
-					className="w-full py-3 bg-accent text-foreground font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:opacity-90 transition"
+					className="w-full py-3 bg-accent text-foreground font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:bg-foreground hover:text-background transition"
 				>
 					Save Post
 				</button>
 				<button
 					type="button"
-					className="w-full py-3 bg-accent text-foreground font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:opacity-90 transition"
+					className="w-full py-3 bg-accent text-foreground font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:bg-foreground hover:text-background transition"
 					onClick={async () => {
 						await publishPostAction(post);
 					}}
@@ -224,7 +224,7 @@ export default function PostForm({
 				</button>
 				<Link
 					href="/admin/dashboard"
-					className="w-full py-3 bg-accent text-foreground font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:opacity-90 transition text-center"
+					className="w-full py-3 bg-accent text-foreground font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:bg-foreground hover:text-background transition text-center"
 				>
 					Back
 				</Link>
