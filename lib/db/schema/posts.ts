@@ -23,6 +23,7 @@ export const posts = pgTable(
 		isPublished: boolean("is_published").default(false).notNull(),
 		isFeatured: boolean("is_featured").default(false).notNull(),
 		reads: integer("reads").default(0).notNull(),
+		commentApproval: boolean("comment_approval").default(true).notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at").defaultNow().notNull(),
 		publishedAt: timestamp("published_at"),

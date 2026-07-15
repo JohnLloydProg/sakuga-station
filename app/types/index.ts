@@ -37,6 +37,7 @@ interface ClientCompletePost {
 	reads: number;
 	body: string | null;
 	thumbnail: string | null;
+	commentApproval: boolean;
 	categories: Category[];
 	publishedAt: Date | null;
 	contents: ClientContent[];

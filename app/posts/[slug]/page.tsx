@@ -1,11 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCommentsByPost } from "@/lib/db/queries/comments";
+import {
+	getApprovedCommentsByPost,
+	getCommentsByPost,
+} from "@/lib/db/queries/comments";
 import { getClientPostBySlug } from "@/lib/db/queries/posts";
 import CommentForm from "./commentForm";
 import ReadTrigger from "./readTrigger";
 import parse from "html-react-parser";
+import { Comment } from "@/lib/db/schema/comments";
 
 export default async function PostPage({
 	params,
@@ -17,7 +21,12 @@ export default async function PostPage({
 	const post = await getClientPostBySlug(slug);
 	if (!post) return notFound();
 
-	const comments = await getCommentsByPost(post.id);
+	let comments: Comment[] = [];
+	if (post.commentApproval) {
+		comments = await getApprovedCommentsByPost(post.id);
+	} else {
+		comments = await getCommentsByPost(post.id);
+	}
 
 	return (
 		<article className="w-full min-h-screen bg-background px-4 py-8 md:py-12 text-foreground font-lato max-w-6xl mx-auto">

@@ -1,4 +1,11 @@
-import { index, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+	boolean,
+	index,
+	pgTable,
+	text,
+	timestamp,
+	uuid,
+} from "drizzle-orm/pg-core";
 import { posts } from "./posts";
 
 export const comments = pgTable(
@@ -10,6 +17,7 @@ export const comments = pgTable(
 			.notNull(),
 		authorName: text("author_name").notNull(),
 		body: text("body").notNull(),
+		isApproved: boolean("is_approved").default(false).notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 	},
 	(t) => [index("comments_post_id_idx").on(t.postId)],

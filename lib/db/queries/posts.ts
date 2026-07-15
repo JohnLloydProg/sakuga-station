@@ -135,6 +135,7 @@ export async function getClientPostBySlug(
 				slug: true,
 				body: true,
 				reads: true,
+				commentApproval: true,
 				thumbnail: true,
 				publishedAt: true,
 			},

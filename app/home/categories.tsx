@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getCategories } from "@/lib/db/queries/categories";
+import SubscribeModal from "../components/subscriptionForm";
 
 export async function CategoriesSection() {
 	const categories = await getCategories();
@@ -14,6 +15,7 @@ export async function CategoriesSection() {
 					{category.name}
 				</Link>
 			))}
+			<SubscribeModal categories={categories} />
 		</div>
 	);
 }
