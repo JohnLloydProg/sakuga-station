@@ -3,7 +3,7 @@ import { createUser } from "./mutations/users";
 import { categories } from "./schema/categories";
 import { contents } from "./schema/contents";
 
-const contentNames = ["Header", "Picture", "Paragraph"];
+const contentNames = ["Section", "Picture"];
 const categoryNames = [
 	"Romance",
 	"Isekai",

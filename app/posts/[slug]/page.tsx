@@ -5,6 +5,7 @@ import { getCommentsByPost } from "@/lib/db/queries/comments";
 import { getClientPostBySlug } from "@/lib/db/queries/posts";
 import CommentForm from "./commentForm";
 import ReadTrigger from "./readTrigger";
+import parse from "html-react-parser";
 
 export default async function PostPage({
 	params,
@@ -62,23 +63,23 @@ export default async function PostPage({
 			</p>
 
 			{post.contents.map((content) => {
-				if (content.type === "Header")
+				if (content.type === "Section")
 					return (
-						<div key={content.id} className="mt-5 mb-2">
-							<h2 className="font-josefin lg:text-3xl font-bold">
-								{content.payload}
-							</h2>
-						</div>
-					);
-
-				if (content.type === "Paragraph")
-					return (
-						<p
+						<div
 							key={content.id}
-							className="prose max-w-none text-foreground/90 text-base md:text-lg leading-relaxed"
+							className="
+								prose max-w-full text-foreground 
+								prose-headings:font-bold prose-headings:text-foreground 
+								prose-h1:text-4xl prose-h1:mb-6
+								prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 
+								prose-p:text-base prose-p:leading-normal prose-p:mb-5 
+								prose-a:text-accent prose-a:underline hover:prose-a:text-muted 
+								prose-ul:list-disc prose-ul:ml-5 
+								prose-strong:text-foreground
+							"
 						>
-							{content.payload}
-						</p>
+							{parse(content.payload)}
+						</div>
 					);
 
 				if (content.type === "Picture")

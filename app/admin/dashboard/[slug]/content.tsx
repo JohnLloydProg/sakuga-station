@@ -1,6 +1,7 @@
 import type { Dispatch, RefObject, SetStateAction } from "react";
 import type { PostContent } from "@/lib/db/schema/contents";
 import ImageInput from "./imageInput";
+import RichTextEditor from "./richTextEditor";
 
 interface ContentEditProp {
 	index: number;
@@ -82,27 +83,8 @@ export default function ContentEdit({
 					</button>
 				</div>
 			</div>
-			{content.type === "Header" && (
-				<input
-					type="text"
-					className="w-full md:w-1/2 px-4 py-2 rounded-md bg-background border border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent"
-					value={content.payload}
-					onChange={(event) => {
-						content.payload = event.target.value;
-						setClientContents(clientContents.with(index, content));
-					}}
-				/>
-			)}
-			{content.type === "Paragraph" && (
-				<textarea
-					rows={4}
-					className="w-full px-4 py-2 rounded-md bg-background border border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent resize-none"
-					defaultValue={content.payload}
-					onChange={(event) => {
-						content.payload = event.target.value;
-						setClientContents(clientContents.with(index, content));
-					}}
-				/>
+			{content.type === "Section" && (
+				<RichTextEditor id={content.id} initialContent={content.payload} />
 			)}
 			{content.type === "Picture" && (
 				<ImageInput contentImage={content.payload} inputId={content.id} />

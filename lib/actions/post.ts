@@ -44,6 +44,7 @@ export async function savePostAction(
 	post.title = title;
 	post.body = introduction;
 	post.updatedAt = new Date();
+
 	const image = formData.get("hero-image-upload") as File;
 	if (image.size > 0) {
 		try {
@@ -62,6 +63,7 @@ export async function savePostAction(
 			return { success: false, message: "Failed to save the comment." };
 		}
 	}
+
 	const parsedPost = postUpdateSchema.safeParse(post);
 	if (!parsedPost.success)
 		return {
@@ -73,22 +75,26 @@ export async function savePostAction(
 	for (const [index, content] of contents.entries()) {
 		const [typeId, contentId] = content.id.split("/");
 		if (formData.has(content.id)) {
-			const image = formData.get(content.id) as File;
-			if (image.size > 0) {
-				try {
-					const blobPath = `${post.id}/${image.name}`;
+			if (typeof formData.get(content.id) === "string") {
+				content.payload = formData.get(content.id) as string;
+			} else {
+				const image = formData.get(content.id) as File;
+				if (image.size > 0) {
+					try {
+						const blobPath = `${post.id}/${image.name}`;
 
-					const blob = await put(blobPath, image, {
-						access: "public",
-						addRandomSuffix: false,
-						contentType: image.type,
-						allowOverwrite: true,
-					});
+						const blob = await put(blobPath, image, {
+							access: "public",
+							addRandomSuffix: false,
+							contentType: image.type,
+							allowOverwrite: true,
+						});
 
-					content.payload = blob.url;
-				} catch (error) {
-					console.error("Failed to write to Blob:", error);
-					return { success: false, message: "Failed to save the comment." };
+						content.payload = blob.url;
+					} catch (error) {
+						console.error("Failed to write to Blob:", error);
+						return { success: false, message: "Failed to save the comment." };
+					}
 				}
 			}
 		}
