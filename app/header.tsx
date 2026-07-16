@@ -1,9 +1,9 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { useSyncExternalStore, useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 function subscribe(callback: () => void) {
 	window.addEventListener("resize", callback);
@@ -24,7 +24,7 @@ export default function ClientHeader() {
 
 	useEffect(() => {
 		setIsOpen(false);
-	}, [currentPath]);
+	}, []);
 
 	useEffect(() => {
 		if (isOpen) {
@@ -69,13 +69,6 @@ export default function ClientHeader() {
 				>
 					Posts
 				</Link>
-
-				<button
-					type="button"
-					className="font-josefin font-bold text-base px-6 py-1.5 bg-accent text-foreground rounded-full shadow-sm hover:bg-foreground hover:text-background transition-all duration-200 ml-2"
-				>
-					Subscribe
-				</button>
 			</nav>
 
 			<button
@@ -129,13 +122,6 @@ export default function ClientHeader() {
 					>
 						Posts
 					</Link>
-
-					<button
-						type="button"
-						className="font-josefin font-bold text-lg px-8 py-2.5 bg-accent text-foreground rounded-full shadow-sm hover:bg-foreground hover:text-background transition-all duration-200 w-4/5 max-w-xs mt-2"
-					>
-						Subscribe
-					</button>
 				</nav>
 			</div>
 		</header>

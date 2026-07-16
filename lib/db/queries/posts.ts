@@ -1,9 +1,9 @@
 import { and, count, eq, ilike } from "drizzle-orm";
+import { connection } from "next/server";
 import { db } from "..";
 import { categories, postCategories } from "../schema/categories";
 import { type Post, posts } from "../schema/posts";
 import type { User } from "../schema/users";
-import { connection } from "next/server";
 
 export async function getClientPosts(
 	offset: number,

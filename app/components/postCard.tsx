@@ -6,10 +6,10 @@ export default function PostCard({ post }: { post: ClientPost }) {
 		<article className="bg-secondary/40 w-full rounded-xl overflow-hidden p-4 border border-secondary/20 shadow-sm flex flex-col justify-between">
 			<div className="w-full aspect-16/10 bg-muted/20 rounded-lg overflow-hidden mb-4 relative">
 				<Image
-					src={post.thumbnail ? post.thumbnail : "/next.svg"}
+					src={post.thumbnail ? post.thumbnail : "/image-placeholder.png"}
 					alt={post.title}
 					fill
-					className="w-full h-full object-contain"
+					className="w-full h-full object-cover"
 				/>
 				<div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent flex items-end p-4" />
 			</div>

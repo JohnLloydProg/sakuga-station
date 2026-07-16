@@ -276,7 +276,7 @@ export default function PostForm({
 						disabled={isSaving || isPublishing}
 						onClick={() => {
 							startTransition(async () => {
-								await publishPostAction(post);
+								await publishPostAction(postOnly, categories);
 							});
 						}}
 					>

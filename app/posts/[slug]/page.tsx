@@ -34,10 +34,10 @@ export default async function PostPage({
 			<ReadTrigger postId={post.id} />
 			<div className="w-full lg:w-4/5 aspect-video bg-secondary rounded-lg overflow-hidden shadow-sm mb-8 relative border border-secondary/40 mx-auto">
 				<Image
-					src={post.thumbnail || "/next.svg"}
+					src={post.thumbnail || "/image-placeholder.png"}
 					alt={post.title}
 					fill
-					className="w-full h-full object-contain"
+					className="w-full h-full object-cover"
 				/>
 			</div>
 
@@ -102,7 +102,7 @@ export default async function PostPage({
 								src={content.payload}
 								alt="Content Picture"
 								fill
-								className="w-full h-full object-contain"
+								className="w-full h-full object-cover"
 							/>
 						</div>
 					);

@@ -1,6 +1,6 @@
+import { NextResponse } from "next/server";
 import { deleteSession } from "@/lib/db/mutations/users";
 import { getExpiredSessions } from "@/lib/db/queries/users";
-import { NextResponse } from "next/server";
 
 export const revalidate = 0;
 

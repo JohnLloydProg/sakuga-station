@@ -30,11 +30,11 @@ export async function CategoryPostsSection() {
 							>
 								<div className="w-full aspect-video rounded overflow-hidden bg-muted/40 mb-2 border border-secondary">
 									<Image
-										src={post.thumbnail || "/next.svg"}
+										src={post.thumbnail || "/image-placeholder.png"}
 										alt={post.title}
 										width={300}
 										height={200}
-										className="w-full h-full object-contain"
+										className="w-full h-full object-cover"
 									/>
 								</div>
 								<h4 className="font-josefin font-bold text-base leading-tight px-2 line-clamp-2">

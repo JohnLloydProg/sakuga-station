@@ -11,11 +11,11 @@ export async function FeaturedPostSection() {
 			<div className="w-full md:w-2/5 flex justify-center md:justify-end relative shrink-0 order-first md:order-last">
 				<div className="w-full aspect-video rounded-lg overflow-hidden shadow-xl bg-secondary relative border border-background/20">
 					<Image
-						src={featuredPost?.thumbnail || "/next.svg"}
+						src={featuredPost?.thumbnail || "/image-placeholder.png"}
 						alt="Featured Post Key Art"
 						width={1000}
 						height={600}
-						className="w-full h-full object-contain"
+						className="w-full h-full object-cover"
 						priority
 					/>
 				</div>

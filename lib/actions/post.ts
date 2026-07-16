@@ -2,7 +2,9 @@
 
 import { put } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
+import { Resend } from "resend";
 import { z } from "zod";
+import PublishedPostEmail from "@/app/components/emailTemplate";
 import { addCategory, removeCategory } from "../db/mutations/categories";
 import { deleteContent, upsertContent } from "../db/mutations/contents";
 import {
@@ -12,6 +14,8 @@ import {
 	readPost,
 	updatePost,
 } from "../db/mutations/posts";
+import { getEmailsForCategory } from "../db/queries/emails";
+import type { Category } from "../db/schema/categories";
 import type { postContents } from "../db/schema/contents";
 import type { Post } from "../db/schema/posts";
 import type { FormState } from "./interfaces";
@@ -29,6 +33,8 @@ const contentInsertSchema = z.object({
 	payload: z.string().min(5, "Content needs to have a payload"),
 	index: z.int(),
 });
+
+const resend = new Resend(process.env.RESEND_API);
 
 export async function savePostAction(
 	post: Post,
@@ -224,7 +230,10 @@ export async function featurePostAction(postId: string): Promise<FormState> {
 	}
 }
 
-export async function publishPostAction(post: Post): Promise<FormState> {
+export async function publishPostAction(
+	post: Post,
+	categories: Category[],
+): Promise<FormState> {
 	post.isPublished = !post.isPublished;
 	post.publishedAt = post.isPublished ? new Date() : null;
 
@@ -232,6 +241,28 @@ export async function publishPostAction(post: Post): Promise<FormState> {
 		await updatePost(post);
 
 		revalidatePath(`/admin/dashboard/${post.slug}`);
+
+		if (post.isPublished) {
+			for (const category of categories) {
+				const emails = await getEmailsForCategory(category.id);
+				const { error } = await resend.emails.send({
+					from: "onboarding@resend.dev",
+					to: ["johnlloydunida0@gmail.com"],
+					subject: `SakugaStation: New post published for ${category.name}`,
+					react: PublishedPostEmail({
+						postTitle: post.title,
+						postUrl: new URL(
+							`/posts/${post.slug}`,
+							`https://${process.env.VERCEL_URL}`,
+						).toString(),
+					}),
+				});
+				console.log("Sent emails:", emails);
+				if (error) {
+					console.error("Email not sent:", error);
+				}
+			}
+		}
 
 		return { success: true };
 	} catch (error) {

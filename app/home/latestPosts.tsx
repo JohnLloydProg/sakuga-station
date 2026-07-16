@@ -19,11 +19,11 @@ export async function LatestPostsSection() {
 						className="w-full relative aspect-video rounded-xl overflow-hidden group shadow-sm bg-muted/20"
 					>
 						<Image
-							src={post.thumbnail || "/next.svg"}
+							src={post.thumbnail || "/image-placeholder.png"}
 							alt={post.title}
 							width={1000}
 							height={600}
-							className="w-full h-full object-contain group-hover:scale-102 transition-transform duration-300"
+							className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
 						/>
 
 						<div className="absolute top-0 left-0 right-0 bg-background/60 backdrop-blur-md p-4 text-center border-b border-background/20">
