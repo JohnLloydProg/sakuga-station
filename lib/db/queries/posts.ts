@@ -234,6 +234,8 @@ export async function getPostsByAuthorId(user: User): Promise<Post[]> {
 }
 
 export async function getPostbyID(postId: string) {
+	if (!postId) return null;
+
 	try {
 		const post = await db.query.posts.findFirst({
 			where: { id: postId },
