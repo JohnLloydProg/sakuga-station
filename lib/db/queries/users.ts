@@ -1,5 +1,5 @@
 import { db } from "..";
-import type { User } from "../schema/users";
+import type { Session, User } from "../schema/users";
 
 export async function getUserByEmailPassword(
 	email: string,
@@ -48,4 +48,21 @@ export async function getUsers(): Promise<User[]> {
 		console.error("Error fetching users:", error);
 		return [];
 	}
+}
+
+export async function getExpiredSessions(): Promise<Session[]> {
+	const neededDate = new Date();
+	const duration = process.env.SESSION_DURATION_HRS
+		? Number(process.env.SESSION_DURATION_HRS)
+		: 24;
+	neededDate.setHours(neededDate.getHours() - duration);
+	const sessions = await db.query.sessions.findMany({
+		where: {
+			createdAt: {
+				lt: neededDate,
+			},
+		},
+	});
+
+	return sessions;
 }

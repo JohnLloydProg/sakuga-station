@@ -1,5 +1,6 @@
+import { eq } from "drizzle-orm";
 import { db } from "..";
-import { sessions, type User, users } from "../schema/users";
+import { Session, sessions, type User, users } from "../schema/users";
 
 export async function createUser(
 	userProp: typeof users.$inferInsert,
@@ -40,4 +41,8 @@ export async function createSession(user: User): Promise<string | null> {
 		console.log("Error creating session:", insertError);
 		return null;
 	}
+}
+
+export async function deleteSession(session: Session): Promise<void> {
+	await db.delete(sessions).where(eq(sessions.id, session.id));
 }

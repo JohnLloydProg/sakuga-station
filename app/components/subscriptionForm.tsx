@@ -97,7 +97,7 @@ export default function SubscribeModal({
 									{categories.map((cat) => (
 										<label
 											key={cat.id}
-											className="flex items-center p-3 rounded-lg border border-background/40 bg-background/20 cursor-pointer group hover:bg-background/40 transition-all has-[:checked]:border-accent has-[:checked]:bg-accent/10"
+											className="flex items-center p-3 rounded-lg border border-background/40 bg-background/20 cursor-pointer group hover:bg-background/40 transition-all has-checked:border-accent has-checked:bg-accent/10"
 										>
 											<input
 												type="checkbox"
