@@ -4,6 +4,7 @@ import { getFeaturedPost } from "@/lib/db/queries/posts";
 
 export async function FeaturedPostSection() {
 	const featuredPost = await getFeaturedPost();
+	if (!featuredPost) return <div />;
 	return (
 		<div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-10 items-center justify-between">
 			<div className="flex-1 space-y-4 w-3/5">

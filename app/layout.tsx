@@ -34,7 +34,7 @@ export default function RootLayout({
 				<Suspense>
 					<ClientHeader />
 				</Suspense>
-				{children}
+				<Suspense>{children}</Suspense>
 				<Suspense>
 					<Footer />
 				</Suspense>
