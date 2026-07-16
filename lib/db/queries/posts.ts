@@ -3,12 +3,15 @@ import { db } from "..";
 import { categories, postCategories } from "../schema/categories";
 import { type Post, posts } from "../schema/posts";
 import type { User } from "../schema/users";
+import { connection } from "next/server";
 
 export async function getClientPosts(
 	offset: number,
 	search?: string,
 	limit: number = 6,
 ): Promise<[ClientPost[], number]> {
+	await connection();
+
 	try {
 		const postsList = await db.query.posts.findMany({
 			columns: {
@@ -68,6 +71,7 @@ export async function getClientPostsByCategory(
 	search?: string,
 	limit: number = 6,
 ): Promise<[ClientPost[], number]> {
+	await connection();
 	try {
 		const postsList = await db.query.posts.findMany({
 			columns: {
@@ -263,6 +267,8 @@ export async function getPostbyID(postId: string) {
 }
 
 export async function getFeaturedPost(): Promise<ClientPost | null> {
+	await connection();
+
 	try {
 		const post = await db.query.posts.findFirst({
 			columns: {
