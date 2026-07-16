@@ -1,8 +1,8 @@
 import { Settings2 } from "lucide-react";
-import CommentCard from "./commentCard";
-import { getPostbyID } from "@/lib/db/queries/posts";
 import { getCommentsByPost } from "@/lib/db/queries/comments";
+import { getPostbyID } from "@/lib/db/queries/posts";
 import ApprovalToggle from "./approvalToggle";
+import CommentCard from "./commentCard";
 
 interface CommentsAdminPageProps {
 	slug: string;
@@ -49,7 +49,7 @@ export default async function CommentsAdminPage({
 					</div>
 				</div>
 
-				<ApprovalToggle postId={slug} initialState={post.commentApproval} />
+				<ApprovalToggle post={post} />
 			</div>
 
 			<div className="flex flex-col gap-4">

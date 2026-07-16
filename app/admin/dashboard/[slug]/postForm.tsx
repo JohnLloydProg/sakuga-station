@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import { redirect } from "next/navigation";
 import {
 	useActionState,
 	useEffect,
@@ -7,14 +9,12 @@ import {
 	useState,
 	useTransition,
 } from "react";
+import { useFormStatus } from "react-dom";
 import ErrorDisplay from "@/app/components/errorDisplay";
 import { publishPostAction, savePostAction } from "@/lib/actions/post";
 import type { Content } from "@/lib/db/schema/contents";
 import ContentEdit from "./content";
 import ImageInput from "./imageInput";
-import Image from "next/image";
-import { useFormStatus } from "react-dom";
-import { redirect } from "next/navigation";
 
 interface PostProp {
 	id: string;

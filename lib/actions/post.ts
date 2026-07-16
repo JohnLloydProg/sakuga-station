@@ -239,3 +239,18 @@ export async function publishPostAction(post: Post): Promise<FormState> {
 		return { success: false, message: "Failed to publish post." };
 	}
 }
+
+export async function toggleCommentApproval(post: Post): Promise<FormState> {
+	post.commentApproval = !post.commentApproval;
+
+	try {
+		await updatePost(post);
+
+		revalidatePath(`/admin/dashboard/${post.slug}/comments`);
+	} catch (error) {
+		console.error("Failed to update post:", error);
+		return { success: false, message: "Failed to updated post." };
+	}
+
+	return { success: true, message: "Toggled comment approval." };
+}

@@ -9,7 +9,6 @@ export default function SubNav({ slug }: { slug: string }) {
 	const tabs = [
 		{ name: "Post Editor", path: `/admin/dashboard/${slug}` },
 		{ name: "Comments", path: `/admin/dashboard/${slug}/comments` },
-		{ name: "Analytics", path: `/admin/dashboard/${slug}/analytics` },
 	];
 
 	return (

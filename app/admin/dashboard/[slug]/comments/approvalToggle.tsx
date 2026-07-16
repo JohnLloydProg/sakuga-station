@@ -1,16 +1,12 @@
 "use client";
 
-import { useTransition, useState } from "react";
+import { useState, useTransition } from "react";
+import { toggleCommentApproval } from "@/lib/actions/post";
+import type { Post } from "@/lib/db/schema/posts";
 
-export default function ApprovalToggle({
-	postId,
-	initialState,
-}: {
-	postId: string;
-	initialState: boolean;
-}) {
+export default function ApprovalToggle({ post }: { post: Post }) {
 	const [isPending, startTransition] = useTransition();
-	const [isApproved, setIsApproved] = useState(initialState);
+	const [isApproved, setIsApproved] = useState(post.commentApproval);
 
 	const handleToggle = () => {
 		const newState = !isApproved;
@@ -18,6 +14,7 @@ export default function ApprovalToggle({
 
 		startTransition(async () => {
 			console.log("Toggled to", newState);
+			await toggleCommentApproval(post);
 		});
 	};
 

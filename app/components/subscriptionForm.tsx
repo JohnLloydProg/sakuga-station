@@ -1,9 +1,9 @@
 "use client";
 
+import { useActionState, useState } from "react";
+import { useFormStatus } from "react-dom";
 import { subscribeAction } from "@/lib/actions/emails";
 import type { Category } from "@/lib/db/schema/categories";
-import { useState, useActionState } from "react";
-import { useFormStatus } from "react-dom";
 
 function SubmitButton() {
 	const { pending } = useFormStatus();

@@ -2,7 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { createComment } from "../db/mutations/comments";
+import {
+	createComment,
+	deleteComment,
+	updateComment,
+} from "../db/mutations/comments";
+import type { Comment } from "../db/schema/comments";
 import type { FormState } from "./interfaces";
 
 const commentInsertSchema = z.object({
@@ -39,4 +44,36 @@ export async function postComment(
 	revalidatePath(`/posts/${slug}`);
 
 	return { success: true, message: "Comment successfully sent" };
+}
+
+export async function approveCommentAction(
+	comment: Comment,
+): Promise<FormState> {
+	comment.isApproved = true;
+
+	try {
+		await updateComment(comment);
+	} catch (error) {
+		console.error("Failed to approve comment:", error);
+		return { success: false, message: "Failed to create comment." };
+	}
+
+	revalidatePath(`/admin/dashboard/${comment.postId}/comments`);
+
+	return { success: true, message: "Comment approved!" };
+}
+
+export async function deleteCommentAction(
+	comment: Comment,
+): Promise<FormState> {
+	try {
+		await deleteComment(comment.id);
+	} catch (error) {
+		console.error("Failed to delete comment:", error);
+		return { success: false, message: "Failed to delete comment." };
+	}
+
+	revalidatePath(`/admin/dashboard/${comment.postId}/comments`);
+
+	return { success: true, message: "Comment deleted!" };
 }

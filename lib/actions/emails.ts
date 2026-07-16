@@ -1,10 +1,9 @@
 "use server";
 
-import { sql } from "drizzle-orm";
+import { z } from "zod";
 import { db } from "../db/index";
 import { emails, subscriptions } from "../db/schema/emails";
 import type { FormState } from "./interfaces";
-import { z } from "zod";
 
 const emailInsertSchema = z.object({
 	address: z

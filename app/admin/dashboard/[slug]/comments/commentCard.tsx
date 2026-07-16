@@ -1,8 +1,12 @@
 "use client";
 
-import type { Comment } from "@/lib/db/schema/comments";
-import { CheckCircle2, Trash2, Clock, Loader2 } from "lucide-react";
+import { CheckCircle2, Clock, Loader2, Trash2 } from "lucide-react";
 import { useTransition } from "react";
+import {
+	approveCommentAction,
+	deleteCommentAction,
+} from "@/lib/actions/comment";
+import type { Comment } from "@/lib/db/schema/comments";
 
 export default function CommentCard({ comment }: { comment: Comment }) {
 	const [isPending, startTransition] = useTransition();
@@ -10,12 +14,14 @@ export default function CommentCard({ comment }: { comment: Comment }) {
 	const handleApprove = () => {
 		startTransition(async () => {
 			console.log("Approving", comment.id);
+			await approveCommentAction(comment);
 		});
 	};
 
 	const handleDelete = () => {
 		startTransition(async () => {
 			console.log("Deleting", comment.id);
+			await deleteCommentAction(comment);
 		});
 	};
 

@@ -15,7 +15,7 @@ export async function getUserByEmailPassword(
 
 		return user ?? null;
 	} catch (error) {
-		console.log("Error fetching user by email:", error);
+		console.error("Error fetching user by email:", error);
 		return null;
 	}
 }
@@ -34,7 +34,18 @@ export async function getUserBySession(
 
 		return user ?? null;
 	} catch (error) {
-		console.log("Error fetching user by session ID:", error);
+		console.error("Error fetching user by session ID:", error);
 		return null;
+	}
+}
+
+export async function getUsers(): Promise<User[]> {
+	try {
+		const users = await db.query.users.findMany();
+
+		return users;
+	} catch (error) {
+		console.error("Error fetching users:", error);
+		return [];
 	}
 }

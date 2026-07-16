@@ -1,3 +1,4 @@
+import parse from "html-react-parser";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -6,10 +7,9 @@ import {
 	getCommentsByPost,
 } from "@/lib/db/queries/comments";
 import { getClientPostBySlug } from "@/lib/db/queries/posts";
+import type { Comment } from "@/lib/db/schema/comments";
 import CommentForm from "./commentForm";
 import ReadTrigger from "./readTrigger";
-import parse from "html-react-parser";
-import { Comment } from "@/lib/db/schema/comments";
 
 export default async function PostPage({
 	params,
