@@ -14,16 +14,17 @@ export default async function PostsPage({
 	}>;
 }) {
 	const resolvedParams = await searchParams;
+
 	return (
-		<div className="w-full max-w-7xl min-h-screen bg-background p-6 md:p-12 font-lato text-foreground flex gap-10 items-start mx-auto">
-			<div className="flex flex-col gap-6 w-75/100">
+		<div className="w-full max-w-7xl min-h-screen bg-background p-4 md:p-8 lg:p-12 font-lato text-foreground flex flex-col-reverse lg:flex-row gap-8 lg:gap-10 items-start mx-auto">
+			<div className="flex flex-col gap-6 w-full lg:w-[75%]">
 				<SearchBar />
 				<Suspense fallback={<PostsGridSkeleton />}>
 					<PostsGrid resolvedParams={resolvedParams} />
 				</Suspense>
 			</div>
 
-			<div className="flex flex-col gap-8 lg:sticky lg:top-30 w-25/100">
+			<div className="flex flex-col gap-8 w-full lg:w-[25%] lg:sticky lg:top-30">
 				<Suspense fallback={<MostReadSkeleton />}>
 					<MostRead />
 				</Suspense>

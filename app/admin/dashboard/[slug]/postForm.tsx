@@ -53,7 +53,7 @@ function SubmitButton({ isDisabled }: { isDisabled: boolean }) {
 	return (
 		<button
 			type="submit"
-			className="w-full py-3 bg-accent text-foreground cursor-pointer font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:bg-foreground hover:text-background transition  disabled:opacity-50 disabled:cursor-not-allowed"
+			className="w-full py-3 bg-accent text-foreground cursor-pointer font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:bg-foreground hover:text-background transition disabled:opacity-50 disabled:cursor-not-allowed"
 			disabled={pending || isDisabled}
 		>
 			{pending ? "Saving Post..." : "Save Post"}
@@ -100,20 +100,22 @@ export default function PostForm({
 	useEffect(() => {
 		if (status.success) {
 			setCategoryChanges(new Map());
-
 			deletedContents.current = [];
 		}
 	}, [status.success]);
 
 	return (
-		<form action={formAction} className="w-full max-w-6xl flex mt-5 gap-10">
-			<div className="flex flex-col gap-8 w-full">
-				<div className="bg-secondary/40 p-6 rounded-xl border border-secondary/20 shadow-sm">
+		<form
+			action={formAction}
+			className="w-full max-w-6xl flex flex-col lg:flex-row mt-5 gap-8 lg:gap-10 px-4 md:px-0"
+		>
+			<div className="flex flex-col gap-6 md:gap-8 w-full flex-1">
+				<div className="bg-secondary/40 p-4 md:p-6 rounded-xl border border-secondary/20 shadow-sm">
 					<h2 className="font-josefin text-2xl font-bold mb-6">
 						Required Details
 					</h2>
 
-					<div className="flex flex-col md:flex-row gap-6 justify-between items-start">
+					<div className="flex flex-col md:flex-row gap-6 justify-between items-stretch md:items-start">
 						<div className="flex-1 w-full space-y-4">
 							<div className="flex flex-col gap-2">
 								<label
@@ -126,7 +128,7 @@ export default function PostForm({
 									type="text"
 									id="title"
 									name="title"
-									className="w-full px-4 py-2 rounded-md bg-background border border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent"
+									className="w-full px-4 py-2 rounded-md bg-background border border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent text-sm md:text-base"
 									defaultValue={post.title}
 								/>
 							</div>
@@ -142,16 +144,18 @@ export default function PostForm({
 									id="introduction"
 									name="introduction"
 									rows={4}
-									className="w-full px-4 py-2 rounded-md bg-background border border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent resize-none"
+									className="w-full px-4 py-2 rounded-md bg-background border border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent resize-none text-sm md:text-base"
 									defaultValue={post.body ? post.body : ""}
 								/>
 							</div>
 						</div>
 
-						<ImageInput
-							contentImage={post.thumbnail}
-							inputId="hero-image-upload"
-						/>
+						<div className="w-full md:w-auto flex justify-center shrink-0">
+							<ImageInput
+								contentImage={post.thumbnail}
+								inputId="hero-image-upload"
+							/>
+						</div>
 					</div>
 				</div>
 
@@ -169,14 +173,14 @@ export default function PostForm({
 					))}
 				</div>
 
-				<div className="flex justify-center">
-					<div className="inline-flex rounded-full bg-accent overflow-hidden shadow-sm">
+				<div className="flex justify-center w-full">
+					<div className="inline-flex rounded-full bg-accent overflow-x-auto max-w-full scrollbar-none shadow-sm">
 						{contentTypes.map((type) => {
 							return (
 								<button
 									key={type.id}
 									type="button"
-									className="px-5 py-2 font-josefin font-semibold text-sm hover:bg-foreground hover:text-background transition-colors border-r border-background/20"
+									className="px-4 md:px-5 py-2 font-josefin font-semibold text-xs md:text-sm whitespace-nowrap hover:bg-foreground hover:text-background transition-colors border-r border-background/20 last:border-r-0"
 									onClick={() => {
 										setClientContents([
 											...clientContents,
@@ -197,14 +201,15 @@ export default function PostForm({
 				</div>
 			</div>
 
-			<div className="flex flex-col gap-4 lg:sticky lg:top-8 h-fit w-100">
-				<div className="bg-secondary/40 p-5 grid grid-cols-2 rounded border-l-4 border-accent space-y-2">
+			<div className="flex flex-col gap-4 w-full lg:w-95 lg:sticky lg:top-8 h-fit">
+				<div className="bg-secondary/40 p-5 grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 rounded border-l-4 border-accent gap-x-4 gap-y-3">
 					{categoryTypes.map((category) => (
 						<div key={category.id} className="flex items-center gap-3">
 							<input
 								type="checkbox"
 								name={category.id}
 								id={category.id}
+								className="w-4 h-4 cursor-pointer accent-accent"
 								checked={
 									(categories.map((c) => c.id).includes(category.id) ||
 										categoryChanges.get(category.id) === "Add") &&
@@ -222,14 +227,17 @@ export default function PostForm({
 									setCategoryChanges(nextChange);
 								}}
 							/>
-							<div className="font-josefin font-bold text-foreground text-base cursor-pointer hover:text-accent transition">
+							<label
+								htmlFor={category.id}
+								className="font-josefin font-bold text-foreground text-sm md:text-base cursor-pointer hover:text-accent transition select-none"
+							>
 								{category.name}
-							</div>
+							</label>
 						</div>
 					))}
 				</div>
 
-				<div className="h-6 flex items-center justify-center font-josefin font-semibold text-sm transition-all duration-300">
+				<div className="min-h-6 flex items-center justify-center font-josefin font-semibold text-sm transition-all duration-300">
 					{status.success && (
 						<span className="flex items-center gap-2 text-accent">
 							<Image
@@ -259,35 +267,39 @@ export default function PostForm({
 
 				{status.errors && <ErrorDisplay errors={status.errors} />}
 
-				<SubmitButton isDisabled={isPublishing} />
-				<button
-					type="button"
-					className="w-full py-3 bg-accent text-foreground cursor-pointer font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:bg-foreground hover:text-background transition disabled:opacity-50 disabled:cursor-not-allowed"
-					disabled={isSaving || isPublishing}
-					onClick={() => {
-						startTransition(async () => {
-							await publishPostAction(post);
-						});
-					}}
-				>
-					{post.isPublished
-						? isPublishing
-							? "Unpublishing Post..."
-							: "Unpublish Post"
-						: isPublishing
-							? "Publishing Post..."
-							: "Publish Post"}
-				</button>
-				<button
-					type="button"
-					className="w-full py-3 bg-accent text-foreground cursor-pointer font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:bg-foreground hover:text-background transition disabled:opacity-50 disabled:cursor-not-allowed"
-					disabled={isSaving || isPublishing}
-					onClick={() => {
-						redirect("/admin/dashboard");
-					}}
-				>
-					Back
-				</button>
+				<div className="flex flex-col gap-3">
+					<SubmitButton isDisabled={isPublishing} />
+
+					<button
+						type="button"
+						className="w-full py-3 bg-accent text-foreground cursor-pointer font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:bg-foreground hover:text-background transition disabled:opacity-50 disabled:cursor-not-allowed"
+						disabled={isSaving || isPublishing}
+						onClick={() => {
+							startTransition(async () => {
+								await publishPostAction(post);
+							});
+						}}
+					>
+						{post.isPublished
+							? isPublishing
+								? "Unpublishing Post..."
+								: "Unpublish Post"
+							: isPublishing
+								? "Publishing Post..."
+								: "Publish Post"}
+					</button>
+
+					<button
+						type="button"
+						className="w-full py-3 bg-accent text-foreground cursor-pointer font-josefin font-bold text-xl rounded-full tracking-wide shadow-sm hover:bg-foreground hover:text-background transition disabled:opacity-50 disabled:cursor-not-allowed"
+						disabled={isSaving || isPublishing}
+						onClick={() => {
+							redirect("/admin/dashboard");
+						}}
+					>
+						Back
+					</button>
+				</div>
 			</div>
 		</form>
 	);
