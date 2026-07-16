@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { deleteSession } from "@/lib/db/mutations/users";
 import { getExpiredSessions } from "@/lib/db/queries/users";
 
-export const revalidate = 0;
-
 export async function GET(request: Request) {
 	const authHeader = request.headers.get("authorization");
 	if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -21,6 +19,7 @@ export async function GET(request: Request) {
 
 		return NextResponse.json({ success: true, message: "Task completed" });
 	} catch (error) {
+		console.log("Task failed:", error);
 		return NextResponse.json(
 			{ success: false, error: "Task failed" },
 			{ status: 500 },
