@@ -1,16 +1,18 @@
 import { Settings2 } from "lucide-react";
+import { notFound } from "next/navigation";
 import { getCommentsByPost } from "@/lib/db/queries/comments";
 import { getPostbyID } from "@/lib/db/queries/posts";
 import ApprovalToggle from "./approvalToggle";
 import CommentCard from "./commentCard";
 
-interface CommentsAdminPageProps {
-	slug: string;
-}
-
 export default async function CommentsAdminPage({
-	slug,
-}: CommentsAdminPageProps) {
+	params,
+}: {
+	params: Promise<{ slug: string }>;
+}) {
+	const { slug } = await params;
+	if (!slug) return notFound();
+
 	const post = await getPostbyID(slug);
 
 	if (!post) {

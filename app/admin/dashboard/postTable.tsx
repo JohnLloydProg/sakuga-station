@@ -171,7 +171,9 @@ export default function PostTable({
 							>
 								<p className="h-fit leading-tight">{post.title}</p>
 								{post.isFeatured && (
-									<span className="shrink-0 font-josefin font-semibold text-xs rounded-full px-3 py-1 bg-accent group-hover:bg-foreground group-hover:text-background transition-colors">
+									<span
+										className={`shrink-0 font-josefin font-semibold text-xs rounded-full px-3 py-1 bg-accent group-hover:bg-foreground group-hover:text-background transition-colors ${isSelected ? "text-background bg-foreground" : ""}`}
+									>
 										Featured
 									</span>
 								)}
