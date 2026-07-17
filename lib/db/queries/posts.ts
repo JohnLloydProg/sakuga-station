@@ -12,6 +12,8 @@ export async function getClientPosts(
 ): Promise<[ClientPost[], number]> {
 	await connection();
 
+	const searchTerm = search ? `%${search}%` : "%";
+
 	try {
 		const postsList = await db.query.posts.findMany({
 			columns: {
@@ -37,7 +39,7 @@ export async function getClientPosts(
 			where: {
 				isPublished: true,
 				title: {
-					ilike: `%${search ? search : ""}%`,
+					ilike: searchTerm,
 				},
 			},
 			orderBy: {
@@ -53,10 +55,7 @@ export async function getClientPosts(
 			postsList,
 			await db.$count(
 				posts,
-				and(
-					ilike(posts.title, `%${search ? search : ""}%`),
-					eq(posts.isPublished, true),
-				),
+				and(ilike(posts.title, searchTerm), eq(posts.isPublished, true)),
 			),
 		];
 	} catch (error) {
@@ -72,6 +71,9 @@ export async function getClientPostsByCategory(
 	limit: number = 6,
 ): Promise<[ClientPost[], number]> {
 	await connection();
+
+	const searchTerm = search ? `%${search}%` : "%";
+
 	try {
 		const postsList = await db.query.posts.findMany({
 			columns: {
@@ -100,7 +102,7 @@ export async function getClientPostsByCategory(
 					name: category,
 				},
 				title: {
-					ilike: `%${search ? search : ""}%`,
+					ilike: searchTerm,
 				},
 			},
 			orderBy: {
@@ -119,7 +121,13 @@ export async function getClientPostsByCategory(
 			.from(postCategories)
 			.innerJoin(categories, eq(postCategories.categoryId, categories.id))
 			.innerJoin(posts, eq(postCategories.postId, posts.id))
-			.where(and(eq(categories.name, category), eq(posts.isPublished, true)));
+			.where(
+				and(
+					eq(categories.name, category),
+					eq(posts.isPublished, true),
+					ilike(posts.title, searchTerm),
+				),
+			);
 
 		return [postsList, result?.total ?? 0];
 	} catch (error) {
