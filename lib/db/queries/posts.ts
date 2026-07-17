@@ -37,7 +37,7 @@ export async function getClientPosts(
 			where: {
 				isPublished: true,
 				title: {
-					ilike: `${search ? search : ""}%`,
+					ilike: `%${search ? search : ""}%`,
 				},
 			},
 			orderBy: {
@@ -54,7 +54,7 @@ export async function getClientPosts(
 			await db.$count(
 				posts,
 				and(
-					ilike(posts.title, `${search ? search : ""}%`),
+					ilike(posts.title, `%${search ? search : ""}%`),
 					eq(posts.isPublished, true),
 				),
 			),
@@ -100,7 +100,7 @@ export async function getClientPostsByCategory(
 					name: category,
 				},
 				title: {
-					ilike: `${search ? search : ""}%`,
+					ilike: `%${search ? search : ""}%`,
 				},
 			},
 			orderBy: {
