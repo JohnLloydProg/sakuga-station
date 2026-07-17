@@ -1,6 +1,9 @@
+import { connection } from "next/server";
 import { db } from "../index";
 
 export async function getCommentsByPost(postId: string) {
+	await connection();
+
 	try {
 		const commentsList = await db.query.comments.findMany({
 			where: {
@@ -21,6 +24,8 @@ export async function getCommentsByPost(postId: string) {
 }
 
 export async function getApprovedCommentsByPost(postId: string) {
+	await connection();
+
 	try {
 		const commentsList = await db.query.comments.findMany({
 			where: {
